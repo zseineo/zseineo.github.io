@@ -49,7 +49,7 @@ async function init() {
 
   pre.innerHTML = lines.map((line, i) =>
     `<span id="line-${i}" class="anno-line" data-index="${i}">${escapeHtml(line)}</span>`
-  ).join('\n');
+  ).join('');
 
   // 載入已有的標記
   const snap = await getDocs(query(collection(db, 'marks'), where('page', '==', pageName)));
