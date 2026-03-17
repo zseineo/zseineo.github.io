@@ -35,6 +35,17 @@
 </head>
 <body>
   <h1>你英</h1>
+
+  <div style="margin-bottom: 24px; display: flex; align-items: center; gap: 12px;">
+    <label for="bg-color" style="font-size: 0.9rem; color: #555;">網頁底色</label>
+    <input type="color" id="bg-color" value="#ffffff"
+      style="width: 40px; height: 32px; border: 1px solid #ccc; border-radius: 4px; cursor: pointer; padding: 2px;">
+    <button id="reset-color"
+      style="font-size: 0.8rem; color: #888; background: none; border: 1px solid #ccc; border-radius: 4px; padding: 4px 10px; cursor: pointer;">
+      重設
+    </button>
+  </div>
+
   <ul>
     <li><a href="public/你英_042.html">你英_042</a></li>
     <li><a href="public/你英_043.html">你英_043</a></li>
@@ -56,5 +67,23 @@
     <li><a href="public/你英_059.html">你英_059</a></li>
     <li><a href="public/你英_060.html">你英_060</a></li>
   </ul>
+  <script>
+    const picker = document.getElementById('bg-color');
+    const resetBtn = document.getElementById('reset-color');
+    const KEY = 'pagebgColor';
+
+    // 讀取已存的顏色
+    const saved = localStorage.getItem(KEY);
+    if (saved) picker.value = saved;
+
+    picker.addEventListener('input', () => {
+      localStorage.setItem(KEY, picker.value);
+    });
+
+    resetBtn.addEventListener('click', () => {
+      localStorage.removeItem(KEY);
+      picker.value = '#ffffff';
+    });
+  </script>
 </body>
 </html>

@@ -10,6 +10,10 @@ const firebaseConfig = {
   appId: "1:571657337570:web:7aa6df8af9cf7415727cbb"
 };
 
+// 套用底色設定
+const savedBg = localStorage.getItem('pagebgColor');
+if (savedBg) document.body.style.backgroundColor = savedBg;
+
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
