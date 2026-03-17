@@ -48,7 +48,7 @@ async function init() {
   const lines = pre.textContent.split('\n');
 
   pre.innerHTML = lines.map((line, i) =>
-    `<span id="line-${i}" class="anno-line" data-index="${i}">${escapeHtml(line)}</span>`
+    `<span id="line-${i}" class="anno-line" data-index="${i}">${escapeHtml(line) || '&nbsp;'}</span>`
   ).join('');
 
   // 載入已有的標記
