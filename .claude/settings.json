@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -h \"<script\" /e/Zany/Download/AA/備份/public/*.html)",
+      "Bash(grep -n \"var c=localStorage\" /e/Zany/Download/AA/備份/public/*.html)",
+      "Bash(grep -rn \"<iframe\\\\|<embed\\\\|<object\" /e/Zany/Download/AA/備份 --include=*.html)",
+      "Bash(grep -l \"pagebgColor\" \"e:/Zany/Download/AA/備份/working/\"*.html)",
+      "Bash(ls \"e:/Zany/Download/AA/備份/working/\"*.html)",
+      "Bash(for f:*)",
+      "Bash(do)",
+      "Bash(sed -i 's|</body>|<script>var c=localStorage.getItem\\(\"\"pagebgColor\"\"\\);if\\(c\\)document.body.style.backgroundColor=c;</script>\\\\n</body>|' \"$f\")",
+      "Bash(done)"
+    ]
+  }
+}
