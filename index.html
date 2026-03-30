@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>你英</title>
+  <title>Hiroaka</title>
   <style>
     body {
       font-family: sans-serif;
@@ -16,6 +16,21 @@
     h1 {
       font-size: 1.5rem;
       margin-bottom: 24px;
+    }
+    h2 {
+      font-size: 1rem;
+      margin-bottom: 10px;
+      color: #555;
+    }
+    .notice {
+      background: #fff8e1;
+      border-left: 3px solid #ffc107;
+      padding: 12px 16px;
+      margin-bottom: 28px;
+      white-space: pre-wrap;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      border-radius: 0 4px 4px 0;
     }
     ul {
       list-style: none;
@@ -34,9 +49,12 @@
   </style>
 </head>
 <body>
-  <h1>你英</h1>
+  <h1>Hiroaka</h1>
 
-  <div style="margin-bottom: 24px; display: flex; align-items: center; gap: 12px;">
+  <h2>公告</h2>
+  <div class="notice" id="notice">讀取中…</div>
+
+  <div style="margin-bottom: 28px; display: flex; align-items: center; gap: 12px;">
     <label for="bg-color" style="font-size: 0.9rem; color: #555;">網頁底色</label>
     <input type="color" id="bg-color" value="#ffffff"
       style="width: 40px; height: 32px; border: 1px solid #ccc; border-radius: 4px; cursor: pointer; padding: 2px;">
@@ -46,42 +64,25 @@
     </button>
   </div>
 
+  <h2>作品</h2>
   <ul>
-    <li><a href="public/你英_042.html">你英_042</a></li>
-    <li><a href="public/你英_043.html">你英_043</a></li>
-    <li><a href="public/你英_044.html">你英_044</a></li>
-    <li><a href="public/你英_045.html">你英_045</a></li>
-    <li><a href="public/你英_046.html">你英_046</a></li>
-    <li><a href="public/你英_047.html">你英_047</a></li>
-    <li><a href="public/你英_048.html">你英_048</a></li>
-    <li><a href="public/你英_049.html">你英_049</a></li>
-    <li><a href="public/你英_050.html">你英_050</a></li>
-    <li><a href="public/你英_051.html">你英_051</a></li>
-    <li><a href="public/你英_052.html">你英_052</a></li>
-    <li><a href="public/你英_053.html">你英_053</a></li>
-    <li><a href="public/你英_054.html">你英_054</a></li>
-    <li><a href="public/你英_055.html">你英_055</a></li>
-    <li><a href="public/你英_056.html">你英_056</a></li>
-    <li><a href="public/你英_057.html">你英_057</a></li>
-    <li><a href="public/你英_058.html">你英_058</a></li>
-    <li><a href="public/你英_059.html">你英_059</a></li>
-    <li><a href="public/你英_060.html">你英_060</a></li>
-    <li><a href="public/你英_061.html">你英_061</a></li>
-    <li><a href="public/你英_062.html">你英_062</a></li>
-    <li><a href="public/你英_064.html">你英_064</a></li>
-    <li><a href="public/你英_065.html">你英_065</a></li>
-    <li><a href="public/你英_066.html">你英_066</a></li>
-    <li><a href="public/你英_067.html">你英_067</a></li>
-    <li><a href="public/你英_068.html">你英_068</a></li>
-    <li><a href="public/你英_069.html">你英_069</a></li>
-    <li><a href="public/你英_070.html">你英_070</a></li>
+    <li><a href="hiroaka/">你英</a></li>
   </ul>
+
   <script>
+    fetch('notice.txt?_=' + Date.now())
+      .then(r => r.text())
+      .then(t => {
+        document.getElementById('notice').textContent = t.trim() || '（無公告）';
+      })
+      .catch(() => {
+        document.getElementById('notice').textContent = '（無法載入公告）';
+      });
+
     const picker = document.getElementById('bg-color');
     const resetBtn = document.getElementById('reset-color');
     const KEY = 'pagebgColor';
 
-    // 讀取已存的顏色
     const saved = localStorage.getItem(KEY);
     if (saved) {
       document.body.style.backgroundColor = saved;
