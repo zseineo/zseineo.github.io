@@ -32,6 +32,16 @@
       line-height: 1.6;
       border-radius: 0 4px 4px 0;
     }
+    .changelog {
+      background: #f0f4ff;
+      border-left: 3px solid #5c8aff;
+      padding: 12px 16px;
+      margin-bottom: 28px;
+      white-space: pre-wrap;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      border-radius: 0 4px 4px 0;
+    }
     ul {
       list-style: none;
       padding: 0;
@@ -66,10 +76,22 @@
 
   <h2>倉庫</h2>
   <ul>
-    <li><a href="hiroaka/">你的英雄學園</a></li>
+    <li><a href="hiroaka/">你的英雄學園(あなたのヒーローアカデミア)</a></li>
   </ul>
 
+  <h2>更新紀錄</h2>
+  <div class="changelog" id="changelog">讀取中…</div>
+
   <script>
+    fetch('changelog.txt?_=' + Date.now())
+      .then(r => r.text())
+      .then(t => {
+        document.getElementById('changelog').textContent = t.trim() || '（無更新紀錄）';
+      })
+      .catch(() => {
+        document.getElementById('changelog').textContent = '（無法載入更新紀錄）';
+      });
+
     fetch('notice.txt?_=' + Date.now())
       .then(r => r.text())
       .then(t => {
