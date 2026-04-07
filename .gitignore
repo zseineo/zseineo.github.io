@@ -3,3 +3,4 @@ annotation.js
 dashboard.html
 *.sh
 .claude/
+.last_bg_check
