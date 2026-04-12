@@ -59,6 +59,23 @@ def apply_monapo(html_path):
 
     content = original
     path = font_rel_path(html_path)
+    notes = []
+
+    # ── 0. 確保 <head> 內有 viewport meta 標籤 ──
+    # 沒有 viewport，手機會用桌機寬度渲染，@media 永遠不觸發
+    if not re.search(r'<meta\s+[^>]*name\s*=\s*["\']viewport["\']', content, re.IGNORECASE):
+        viewport_tag = '\n    <meta name="viewport" content="width=device-width, initial-scale=1.0">'
+        # 插在 <meta charset...> 之後，找不到就插在 <head> 之後
+        charset_m = re.search(r'<meta\s+[^>]*charset[^>]*>', content, re.IGNORECASE)
+        if charset_m:
+            ins = charset_m.end()
+        else:
+            head_m = re.search(r'<head[^>]*>', content, re.IGNORECASE)
+            if not head_m:
+                return 'error', '找不到 <head> 標籤'
+            ins = head_m.end()
+        content = content[:ins] + viewport_tag + content[ins:]
+        notes.append('補上 viewport')
 
     # ── 1. 在 <style> 後插入 @font-face ──
     style_open = re.search(r'<style>', content)
@@ -144,7 +161,10 @@ def apply_monapo(html_path):
     with open(html_path, 'w', encoding='utf-8') as f:
         f.write(content)
 
-    return 'ok', '已完成'
+    msg = '已完成'
+    if notes:
+        msg += '（' + '、'.join(notes) + '）'
+    return 'ok', msg
 
 
 # ──────────────────────────────────────────────────────────────
