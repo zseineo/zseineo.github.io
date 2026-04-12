@@ -64,8 +64,6 @@ def strip_existing_monapo(content):
         '',
         content,
     )
-    # 5. 收斂連續多餘空行
-    content = re.sub(r'\n[ \t]*\n[ \t]*\n+', '\n\n', content)
     return content
 
 
