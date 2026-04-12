@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 # apply-monapo.py
 #
-# 選擇 AA HTML 檔案，在手機 (@media max-width: 768px) 的 pre 規則中
-# 加入 Monapo 字型。桌機維持原有字型不變。
+# 選擇 AA HTML 檔案，注入 JS 字型偵測：
+# 當瀏覽器偵測不到 MS PGothic 時，自動把 <pre> 改成使用 Monapo。
+# 桌機（有 MS PGothic 的環境）完全不受影響。
 #
 # 執行方式：python apply-monapo.py
 
@@ -14,8 +15,13 @@ if hasattr(sys.stdout, 'reconfigure'):
 
 REPO_ROOT  = os.path.dirname(os.path.abspath(__file__))
 FONT_FILE  = os.path.join(REPO_ROOT, 'fonts', 'monapo.ttf')
-DONE_MARK  = "font-family: 'Monapo'"   # 判斷是否已套用的標記
 EXCLUDE_DIRS = {'fonts', 'private', 'working', '.git'}
+
+# 用 marker 包夾插入內容，方便重複執行時清除舊版
+CSS_MARK_S  = '/* monapo:start */'
+CSS_MARK_E  = '/* monapo:end */'
+HTML_MARK_S = '<!-- monapo:start -->'
+HTML_MARK_E = '<!-- monapo:end -->'
 
 
 # ──────────────────────────────────────────────────────────────
@@ -28,17 +34,39 @@ def font_rel_path(html_file):
     return rel.replace('\\', '/')
 
 
-def find_matching_brace(text, open_pos):
-    """從 open_pos（必須是 '{' 的位置）找出對應的 '}'，回傳其索引"""
-    depth = 0
-    for i in range(open_pos, len(text)):
-        if text[i] == '{':
-            depth += 1
-        elif text[i] == '}':
-            depth -= 1
-            if depth == 0:
-                return i
-    return -1
+def strip_existing_monapo(content):
+    """
+    移除任何現存的 Monapo 修改：
+      1. marker 包夾的區塊（新版）
+      2. 沒有 marker 的舊版 @font-face 與 font-family 屬性
+    """
+    # 1. CSS marker 區塊
+    content = re.sub(
+        r'[ \t]*' + re.escape(CSS_MARK_S) + r'[\s\S]*?' + re.escape(CSS_MARK_E) + r'[ \t]*\n?',
+        '',
+        content,
+    )
+    # 2. HTML marker 區塊
+    content = re.sub(
+        r'[ \t]*' + re.escape(HTML_MARK_S) + r'[\s\S]*?' + re.escape(HTML_MARK_E) + r'[ \t]*\n?',
+        '',
+        content,
+    )
+    # 3. 舊版無 marker 的 @font-face Monapo 區塊
+    content = re.sub(
+        r'[ \t]*@font-face\s*\{[^{}]*[\'"]Monapo[\'"][^{}]*\}[ \t]*\n?',
+        '',
+        content,
+    )
+    # 4. CSS 規則中含 Monapo 的 font-family 屬性行
+    content = re.sub(
+        r'[ \t]*font-family\s*:\s*[\'"]Monapo[\'"][^;]*;[ \t]*\n?',
+        '',
+        content,
+    )
+    # 5. 收斂連續多餘空行
+    content = re.sub(r'\n[ \t]*\n[ \t]*\n+', '\n\n', content)
+    return content
 
 
 # ──────────────────────────────────────────────────────────────
@@ -47,25 +75,26 @@ def find_matching_brace(text, open_pos):
 
 def apply_monapo(html_path):
     """
-    修改單一 HTML 檔案。
-    回傳 ('ok'|'skip'|'error', 訊息)
+    修改單一 HTML 檔案。每次執行都會先清除舊版修改，再重新套用。
+    回傳 ('ok'|'error', 訊息)
     """
     with open(html_path, 'r', encoding='utf-8') as f:
         original = f.read()
 
-    # 已套用過就跳過
-    if DONE_MARK in original:
-        return 'skip', '已套用，跳過'
-
     content = original
-    path = font_rel_path(html_path)
     notes = []
 
-    # ── 0. 確保 <head> 內有 viewport meta 標籤 ──
-    # 沒有 viewport，手機會用桌機寬度渲染，@media 永遠不觸發
+    # ── 0. 清除舊版修改（不論有無 marker）──
+    cleaned = strip_existing_monapo(content)
+    if cleaned != content:
+        notes.append('清除舊版')
+    content = cleaned
+
+    path = font_rel_path(html_path)
+
+    # ── 1. 確保 viewport meta 存在 ──
     if not re.search(r'<meta\s+[^>]*name\s*=\s*["\']viewport["\']', content, re.IGNORECASE):
         viewport_tag = '\n    <meta name="viewport" content="width=device-width, initial-scale=1.0">'
-        # 插在 <meta charset...> 之後，找不到就插在 <head> 之後
         charset_m = re.search(r'<meta\s+[^>]*charset[^>]*>', content, re.IGNORECASE)
         if charset_m:
             ins = charset_m.end()
@@ -77,108 +106,77 @@ def apply_monapo(html_path):
         content = content[:ins] + viewport_tag + content[ins:]
         notes.append('補上 viewport')
 
-    # ── 1. 在 <style> 後插入 @font-face ──
-    style_open = re.search(r'<style>', content)
+    # ── 2. 在 <style> 後插入 @font-face（用 marker 包夾）──
+    style_open = re.search(r'<style[^>]*>', content)
     if not style_open:
         return 'error', '找不到 <style> 標籤'
 
     font_face_block = (
-        "\n    @font-face {"
-        "\n        font-family: 'Monapo';"
-        f"\n        src: url('{path}') format('truetype');"
-        "\n        font-weight: normal;"
-        "\n        font-style: normal;"
-        "\n        font-display: swap;"
-        "\n    }"
+        f"\n    {CSS_MARK_S}\n"
+        "    @font-face {\n"
+        "        font-family: 'Monapo';\n"
+        f"        src: url('{path}') format('truetype');\n"
+        "        font-weight: normal;\n"
+        "        font-style: normal;\n"
+        "        font-display: swap;\n"
+        "    }\n"
+        f"    {CSS_MARK_E}"
     )
     ins = style_open.end()
     content = content[:ins] + font_face_block + content[ins:]
 
-    # ── 2. 找 @media (max-width: 768px) 區塊 ──
-    media_m = re.search(r'@media\s*\(\s*max-width\s*:\s*768px\s*\)', content)
+    # ── 3. 在 </body> 前插入 JS 字型偵測腳本（用 marker 包夾）──
+    js_block = f"""
+{HTML_MARK_S}
+<script>
+(function() {{
+    // 偵測系統是否有 MS PGothic：
+    // 比較 'MS PGothic' 與純 monospace 渲染同一字串的寬度，
+    // 如果不同，代表 MS PGothic 確實存在。
+    function hasMSPGothic() {{
+        var c = document.createElement('canvas');
+        var ctx = c.getContext('2d');
+        var test = 'あいうえおWMHIabc';
+        ctx.font = "16px monospace";
+        var baseW = ctx.measureText(test).width;
+        ctx.font = "16px 'MS PGothic', monospace";
+        var fontW = ctx.measureText(test).width;
+        return Math.abs(baseW - fontW) > 1;
+    }}
 
-    if media_m:
-        # 定位 media block 的開頭 '{'
-        after    = content[media_m.end():]
-        brace_in = after.index('{')
-        m_open   = media_m.end() + brace_in           # '{' 的絕對位置
-        m_close  = find_matching_brace(content, m_open)  # '}' 的絕對位置
-        if m_close == -1:
-            return 'error', '@media 區塊結構異常，找不到對應的 }'
+    if (hasMSPGothic()) return;  // 系統有 MS PGothic，直接用，不替換
 
-        inner = content[m_open + 1 : m_close]
+    // 沒有 MS PGothic：等 Monapo 載入後再套用，避免跳字
+    function applyMonapo() {{
+        var pres = document.querySelectorAll('pre');
+        for (var i = 0; i < pres.length; i++) {{
+            pres[i].style.fontFamily = "'Monapo', 'MS PGothic', monospace";
+        }}
+    }}
 
-        # 在 inner 中找 pre { ... }（無巢狀大括號）
-        pre_m = re.search(r'(pre\s*\{)([^}]*)(\})', inner)
-
-        if pre_m:
-            # 從現有屬性行偵測縮排量
-            inner_lines = pre_m.group(2).split('\n')
-            prop_indent = '            '   # fallback: 12 spaces
-            for line in reversed(inner_lines):
-                if line.strip():
-                    prop_indent = re.match(r'^(\s*)', line).group(1)
-                    break
-            # 從 } 前的換行偵測 closing brace 縮排
-            close_m = re.search(r'\n(\s*)\}$', pre_m.group(0))
-            close_indent = close_m.group(1) if close_m else '        '
-
-            props = pre_m.group(2).rstrip()
-            if props and not props.rstrip().endswith(';'):
-                props += ';'
-            props += f"\n{prop_indent}font-family: 'Monapo', 'MS PGothic', monospace;\n{close_indent}"
-            new_inner = (
-                inner[: pre_m.start()]
-                + pre_m.group(1)
-                + props
-                + pre_m.group(3)
-                + inner[pre_m.end() :]
-            )
-        else:
-            # @media 裡沒有 pre block，直接新增
-            new_inner = (
-                inner.rstrip()
-                + "\n    pre {\n        font-family: 'Monapo', 'MS PGothic', monospace;\n    }\n"
-            )
-
-        content = content[: m_open + 1] + new_inner + content[m_close :]
-
+    if (document.fonts && document.fonts.load) {{
+        document.fonts.load("16px 'Monapo'").then(applyMonapo, applyMonapo);
+    }} else {{
+        applyMonapo();
+    }}
+}})();
+</script>
+{HTML_MARK_E}
+"""
+    body_close = content.rfind('</body>')
+    if body_close != -1:
+        content = content[:body_close] + js_block + content[body_close:]
     else:
-        # 沒有 @media (max-width: 768px)，在 </style> 前新增整段
-        style_close = content.rfind('</style>')
-        if style_close == -1:
-            return 'error', '找不到 </style> 標籤'
-        mobile_rule = (
-            "\n    @media (max-width: 768px) {"
-            "\n        pre {"
-            "\n            font-family: 'Monapo', 'MS PGothic', monospace;"
-            "\n        }"
-            "\n    }"
-        )
-        content = content[:style_close] + mobile_rule + '\n    ' + content[style_close:]
+        content = content + js_block
 
-    # ── 3. 寫入 ──
+    # ── 4. 寫入 ──
     with open(html_path, 'w', encoding='utf-8') as f:
         f.write(content)
 
-    msg = '已完成'
+    msg = '已套用'
     if notes:
         msg += '（' + '、'.join(notes) + '）'
     return 'ok', msg
-
-
-# ──────────────────────────────────────────────────────────────
-# 檔案收集
-# ──────────────────────────────────────────────────────────────
-
-def collect_html_files():
-    files = []
-    for root, dirs, filenames in os.walk(REPO_ROOT):
-        dirs[:] = sorted(d for d in dirs if d not in EXCLUDE_DIRS)
-        for fn in sorted(filenames):
-            if fn.lower().endswith(('.html', '.htm')):
-                files.append(os.path.join(root, fn))
-    return files
 
 
 # ──────────────────────────────────────────────────────────────
@@ -187,21 +185,22 @@ def collect_html_files():
 
 def main():
     print('=' * 62)
-    print('  Monapo 手機字型套用工具')
-    print('  Desktop: keep original font  /  Mobile (<=768px): Monapo')
+    print('  Monapo 字型套用工具（JS 字型偵測版）')
+    print('  有 MS PGothic 的環境：不變動')
+    print('  沒有 MS PGothic 的環境：自動切換為 Monapo')
     print('=' * 62)
 
     if not os.path.exists(FONT_FILE):
         print(f'\n[錯誤] 找不到字型檔：fonts/monapo.ttf')
         sys.exit(1)
 
-    # 用 Windows 檔案選擇視窗讓使用者選取
+    # Windows 檔案選擇視窗
     import tkinter as tk
     from tkinter import filedialog
 
     root = tk.Tk()
-    root.withdraw()          # 隱藏主視窗
-    root.attributes('-topmost', True)  # 確保對話框在最前面
+    root.withdraw()
+    root.attributes('-topmost', True)
 
     print('\n正在開啟檔案選擇視窗…（可複選）')
 
@@ -223,18 +222,19 @@ def main():
         return
 
     print(f'\n正在修改 {len(selected)} 個檔案…\n')
-    ok = skip = err = 0
+    ok = err = 0
     for fp in selected:
-        rel    = os.path.relpath(fp, REPO_ROOT).replace('\\', '/')
+        rel = os.path.relpath(fp, REPO_ROOT).replace('\\', '/')
         status, msg = apply_monapo(fp)
-        icon = {'ok': '✓', 'skip': '－', 'error': '✗'}[status]
+        icon = {'ok': '✓', 'error': '✗'}[status]
         print(f'  {icon}  {rel}')
         print(f'       → {msg}')
-        if   status == 'ok':    ok   += 1
-        elif status == 'skip':  skip += 1
-        else:                   err  += 1
+        if status == 'ok':
+            ok += 1
+        else:
+            err += 1
 
-    print(f'\n完成：修改 {ok} 個 / 跳過 {skip} 個 / 失敗 {err} 個')
+    print(f'\n完成：成功 {ok} 個 / 失敗 {err} 個')
 
 
 if __name__ == '__main__':
