@@ -6,7 +6,7 @@
 #
 # 執行方式：python apply-monapo.py
 
-import os, sys, re, shutil
+import os, sys, re
 
 # Windows 終端機編碼相容（日文字元等）
 if hasattr(sys.stdout, 'reconfigure'):
@@ -140,12 +140,11 @@ def apply_monapo(html_path):
         )
         content = content[:style_close] + mobile_rule + '\n    ' + content[style_close:]
 
-    # ── 3. 備份並寫入 ──
-    shutil.copy2(html_path, html_path + '.bak')
+    # ── 3. 寫入 ──
     with open(html_path, 'w', encoding='utf-8') as f:
         f.write(content)
 
-    return 'ok', f'已完成（備份：{os.path.basename(html_path)}.bak）'
+    return 'ok', '已完成'
 
 
 # ──────────────────────────────────────────────────────────────
@@ -176,41 +175,28 @@ def main():
         print(f'\n[錯誤] 找不到字型檔：fonts/monapo.ttf')
         sys.exit(1)
 
-    files = collect_html_files()
-    if not files:
-        print('\n找不到任何 HTML 檔案。')
-        sys.exit(0)
+    # 用 Windows 檔案選擇視窗讓使用者選取
+    import tkinter as tk
+    from tkinter import filedialog
 
-    print(f'\n找到 {len(files)} 個 HTML 檔案：\n')
-    for i, fp in enumerate(files, 1):
-        rel     = os.path.relpath(fp, REPO_ROOT).replace('\\', '/')
-        done    = DONE_MARK in open(fp, encoding='utf-8').read()
-        tag     = '  [已套用]' if done else ''
-        print(f'  {i:3d}.  {rel}{tag}')
+    root = tk.Tk()
+    root.withdraw()          # 隱藏主視窗
+    root.attributes('-topmost', True)  # 確保對話框在最前面
 
-    print()
-    print('請輸入要套用的編號（用逗號分隔，例如 1,3,5）')
-    print('或輸入 all 選擇全部  /  直接 Enter 取消')
-    choice = input('> ').strip()
+    print('\n正在開啟檔案選擇視窗…（可複選）')
 
-    if not choice:
-        print('取消。')
-        return
+    selected = filedialog.askopenfilenames(
+        title='選擇要套用 Monapo 的 HTML 檔案（可複選）',
+        initialdir=REPO_ROOT,
+        filetypes=[
+            ('HTML 檔案', '*.html *.htm'),
+            ('所有檔案',  '*.*'),
+        ],
+    )
 
-    if choice.lower() == 'all':
-        selected = files
-    else:
-        selected = []
-        for part in choice.replace('，', ',').split(','):
-            part = part.strip()
-            if part.isdigit():
-                idx = int(part) - 1
-                if 0 <= idx < len(files):
-                    selected.append(files[idx])
-                else:
-                    print(f'  [忽略] 超出範圍的編號：{part}')
-            elif part:
-                print(f'  [忽略] 無法識別的輸入：{part}')
+    root.destroy()
+
+    selected = list(selected)
 
     if not selected:
         print('未選擇任何檔案。')
@@ -229,8 +215,6 @@ def main():
         else:                   err  += 1
 
     print(f'\n完成：修改 {ok} 個 / 跳過 {skip} 個 / 失敗 {err} 個')
-    if ok:
-        print('備份檔為同名 .bak，確認結果無誤後可自行刪除。')
 
 
 if __name__ == '__main__':

@@ -4,3 +4,5 @@ dashboard.html
 *.sh
 .claude/
 .last_bg_check
+.last_copy_sync
+.bak
