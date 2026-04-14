@@ -7,3 +7,5 @@ dashboard.html
 .last_copy_sync
 .bak
 CLAUDE.md
+.py
+_pycache_/
