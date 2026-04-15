@@ -8,4 +8,4 @@ dashboard.html
 .bak
 CLAUDE.md
 .py
-_pycache_/
+__pycache__/
