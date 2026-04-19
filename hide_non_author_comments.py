@@ -19,8 +19,8 @@ def process_file(file_path):
         m = header_pattern.match(line)
         if m:
             name = m.group(2)
-            # 判斷是否為作者留言 (名稱包含 ◆gLwLdQffvk)
-            if "◆gLwLdQffvk" in name:
+            # 判斷是否為作者留言
+            if "◆pRBMvKqQmw" in name:
                 # 若之前在非作者留言區塊中，則關閉 span 標籤
                 if in_non_author:
                     out_lines[-1] = out_lines[-1] + '</span>'
