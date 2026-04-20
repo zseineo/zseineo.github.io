@@ -5,8 +5,10 @@ dashboard.html
 .claude/
 .last_bg_check
 .last_copy_sync
+.index_cache
 .bak
 CLAUDE.md
+scripts-overview.md
 .py
 __pycache__/
 .pyc
