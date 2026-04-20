@@ -7,7 +7,16 @@ from tkinter import filedialog, messagebox
 # 隱藏非作者留言的處理函數
 def process_file(file_path):
     with open(file_path, "r", encoding="utf-8") as f:
-        lines = f.readlines()
+        content = f.read()
+
+    # 移除既有的隱藏用 span 標籤（正常形式，保留包住的內容），不影響上色用的 span
+    content = re.sub(r'<span style="display:none;">(.*?)</span>', r'\1', content, flags=re.DOTALL)
+
+    # 移除被編輯器 HTML 編碼的孤兒版本（直接刪除，無對應內容包覆關係）
+    content = content.replace('&lt;span style=&quot;display:none;&quot;&gt;', '')
+    content = content.replace('&lt;/span&gt;', '')
+
+    lines = content.splitlines(keepends=True)
 
     # 匹配留言標頭的正規表達式
     header_pattern = re.compile(r"^(\d+)\s*：\s*(.*?)\s*：\s*(\d{4}/\d{2}/\d{2}.*?ID:.*)$")
