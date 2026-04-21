@@ -9,6 +9,6 @@ dashboard.html
 .bak
 CLAUDE.md
 scripts-overview.md
-.py
+*.py
 __pycache__/
-.pyc
+*.pyc
