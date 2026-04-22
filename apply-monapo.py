@@ -235,5 +235,29 @@ def main():
     print(f'\n完成：成功 {ok} 個 / 失敗 {err} 個')
 
 
+def batch_main(files):
+    """非互動批次模式：直接處理指定檔案清單（由 update.sh 呼叫）"""
+    if not os.path.exists(FONT_FILE):
+        print(f'[錯誤] 找不到字型檔：fonts/monapo.ttf')
+        sys.exit(1)
+
+    ok = err = 0
+    for fp in files:
+        if not os.path.isfile(fp):
+            continue
+        rel = os.path.relpath(fp, REPO_ROOT).replace('\\', '/')
+        status, msg = apply_monapo(fp)
+        icon = {'ok': '✓', 'error': '✗'}[status]
+        print(f'    {icon}  {rel} → {msg}')
+        if status == 'ok':
+            ok += 1
+        else:
+            err += 1
+    print(f'  Monapo 完成：成功 {ok} 個 / 失敗 {err} 個')
+
+
 if __name__ == '__main__':
-    main()
+    if len(sys.argv) > 1 and sys.argv[1] == '--batch':
+        batch_main(sys.argv[2:])
+    else:
+        main()
