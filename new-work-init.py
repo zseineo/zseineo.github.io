@@ -12,7 +12,7 @@ import sys
 import re
 from pathlib import Path
 
-NOTICE_DEFAULT = "作者 \n翻譯 Gemini 3.1\n"
+NOTICE_DEFAULT = "作者 "
 
 
 def natural_key(s):
