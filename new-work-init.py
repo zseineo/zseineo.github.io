@@ -1,18 +1,24 @@
 #!/usr/bin/env python3
 """
-初始化新作品資料夾，生成 index.html 與 notice.txt。
+初始化新作品資料夾，生成 index.html 與 notice.txt，並自動寫入根首頁目錄。
 
 用法：
-    python new-work-init.py <資料夾路徑> <作品標題>
+    python new-work-init.py <作品名稱>
 
 例子：
-    python new-work-init.py "亞魯夫的異世界轉移冒險者傳記" "亞魯夫的異世界轉移冒險者傳記"
+    python new-work-init.py 亞魯夫的異世界轉移冒險者傳記
+
+作品資料夾會建立在 gallery/<作品名稱>/ 底下。
 """
 import sys
 import re
 from pathlib import Path
 
+SCRIPT_DIR = Path(__file__).parent
+GALLERY_DIR = SCRIPT_DIR / "gallery"
+ROOT_INDEX = SCRIPT_DIR / "index.html"
 NOTICE_DEFAULT = "作者 "
+RESERVED_NAMES = {"working"}
 
 
 def natural_key(s):
@@ -68,7 +74,7 @@ def build_index(folder: Path, title: str) -> str:
   </style>
 </head>
 <body>
-  <a class="back" href="../">← 返回首頁</a>
+  <a class="back" href="../../">← 返回首頁</a>
   <h1>{title}</h1>
 
   <h2>公告</h2>
@@ -125,18 +131,53 @@ def build_index(folder: Path, title: str) -> str:
 """
 
 
+def update_root_index(name: str) -> bool:
+    """在根首頁 <ul> 末端插入新作品連結，若已存在則跳過。回傳是否有寫入。"""
+    if not ROOT_INDEX.exists():
+        print(f"！找不到根首頁 {ROOT_INDEX}，跳過自動寫入")
+        return False
+
+    content = ROOT_INDEX.read_text(encoding="utf-8")
+    href = f"gallery/{name}/"
+
+    if href in content:
+        print(f"根首頁已有 {name} 的連結，跳過")
+        return False
+
+    new_item = f'    <li><a href="{href}">{name}</a></li>'
+    # 在 </ul> 前插入（只改第一個 </ul>，即作品列表那個）
+    updated = re.sub(r'[ \t]*</ul>', f"{new_item}\n  </ul>", content, count=1)
+    if updated == content:
+        print("！找不到 </ul>，無法自動寫入根首頁")
+        return False
+
+    ROOT_INDEX.write_text(updated, encoding="utf-8")
+    print(f"已在根首頁目錄加入：{name}")
+    return True
+
+
 def main():
-    if len(sys.argv) < 3:
-        print(f"用法：python {sys.argv[0]} <資料夾路徑> <作品標題>")
+    if len(sys.argv) < 2:
+        print(f"用法：python {sys.argv[0]} <作品名稱>")
         sys.exit(1)
 
-    folder = Path(sys.argv[1])
-    title = sys.argv[2]
+    name = sys.argv[1]
+
+    if name in RESERVED_NAMES:
+        print(f"錯誤：'{name}' 為保留名稱，不可作為作品名")
+        sys.exit(1)
+
+    folder = GALLERY_DIR / name
+
+    if not folder.exists():
+        folder.mkdir(parents=True)
+        print(f"已建立資料夾 {folder}")
 
     if not folder.is_dir():
-        print(f"錯誤：找不到資料夾 {folder}")
+        print(f"錯誤：{folder} 不是資料夾")
         sys.exit(1)
 
+    title = name
     index_path = folder / "index.html"
     notice_path = folder / "notice.txt"
 
@@ -148,6 +189,8 @@ def main():
     else:
         notice_path.write_text(NOTICE_DEFAULT, encoding="utf-8")
         print(f"已生成 {notice_path}")
+
+    update_root_index(name)
 
 
 if __name__ == "__main__":
