@@ -2,17 +2,14 @@
 """
 初始化新作品資料夾，生成 index.html 與 notice.txt，並自動寫入根首頁目錄。
 
-用法：
-    python new-work-init.py <作品名稱>
-
-例子：
-    python new-work-init.py 亞魯夫的異世界轉移冒險者傳記
-
-作品資料夾會建立在 gallery/<作品名稱>/ 底下。
+用法：直接執行腳本，選擇 gallery/ 內的目標資料夾即可。
+      若資料夾尚未存在，可先在 gallery/ 內新建再選取，或直接選取 gallery/ 並輸入名稱。
 """
-import sys
 import re
+import sys
+import tkinter as tk
 from pathlib import Path
+from tkinter import filedialog, messagebox
 
 SCRIPT_DIR = Path(__file__).parent
 GALLERY_DIR = SCRIPT_DIR / "gallery"
@@ -131,7 +128,18 @@ def build_index(folder: Path, title: str) -> str:
 """
 
 
-def update_root_index(name: str) -> bool:
+def get_japanese_name(folder: Path) -> str | None:
+    """從資料夾內任一 HTML 檔名推導日文原名（去掉底線與末尾數字）。"""
+    for f in sorted(folder.glob("*.html")):
+        if f.name == "index.html":
+            continue
+        base = re.sub(r'_\d+$', '', f.stem)
+        if base:
+            return base
+    return None
+
+
+def update_root_index(name: str, display_text: str) -> bool:
     """在根首頁 <ul> 末端插入新作品連結，若已存在則跳過。回傳是否有寫入。"""
     if not ROOT_INDEX.exists():
         print(f"！找不到根首頁 {ROOT_INDEX}，跳過自動寫入")
@@ -144,7 +152,7 @@ def update_root_index(name: str) -> bool:
         print(f"根首頁已有 {name} 的連結，跳過")
         return False
 
-    new_item = f'    <li><a href="{href}">{name}</a></li>'
+    new_item = f'    <li><a href="{href}">{display_text}</a></li>'
     # 在 </ul> 前插入（只改第一個 </ul>，即作品列表那個）
     updated = re.sub(r'[ \t]*</ul>', f"{new_item}\n  </ul>", content, count=1)
     if updated == content:
@@ -152,29 +160,55 @@ def update_root_index(name: str) -> bool:
         return False
 
     ROOT_INDEX.write_text(updated, encoding="utf-8")
-    print(f"已在根首頁目錄加入：{name}")
+    print(f"已在根首頁目錄加入：{display_text}")
     return True
 
 
+def pick_folder() -> Path | None:
+    """開啟資料夾選擇器，預設在 gallery/ 目錄，回傳選取的 Path 或 None（取消）。"""
+    root = tk.Tk()
+    root.withdraw()
+    root.attributes("-topmost", True)
+    selected = filedialog.askdirectory(
+        title="選擇要初始化的作品資料夾（在 gallery/ 內選取或新建）",
+        initialdir=str(GALLERY_DIR),
+        mustexist=False,
+    )
+    root.destroy()
+    return Path(selected) if selected else None
+
+
 def main():
-    if len(sys.argv) < 2:
-        print(f"用法：python {sys.argv[0]} <作品名稱>")
+    folder = pick_folder()
+
+    if folder is None:
+        print("已取消。")
+        sys.exit(0)
+
+    # 確認選取的資料夾是 gallery/ 的直接子目錄
+    try:
+        rel = folder.relative_to(GALLERY_DIR)
+    except ValueError:
+        messagebox.showerror("錯誤", f"請在 gallery/ 目錄內選取資料夾。\n選取的路徑：{folder}")
         sys.exit(1)
 
-    name = sys.argv[1]
+    parts = rel.parts
+    if len(parts) != 1:
+        messagebox.showerror("錯誤", f"請直接選取 gallery/ 的子資料夾，不要選到更深的層級。\n選取：{folder}")
+        sys.exit(1)
+
+    name = parts[0]
 
     if name in RESERVED_NAMES:
-        print(f"錯誤：'{name}' 為保留名稱，不可作為作品名")
+        messagebox.showerror("錯誤", f"'{name}' 為保留名稱，不可作為作品名。")
         sys.exit(1)
-
-    folder = GALLERY_DIR / name
 
     if not folder.exists():
         folder.mkdir(parents=True)
         print(f"已建立資料夾 {folder}")
 
     if not folder.is_dir():
-        print(f"錯誤：{folder} 不是資料夾")
+        messagebox.showerror("錯誤", f"{folder} 不是資料夾。")
         sys.exit(1)
 
     title = name
@@ -184,13 +218,23 @@ def main():
     index_path.write_text(build_index(folder, title), encoding="utf-8")
     print(f"已生成 {index_path}")
 
+    notice_skipped = False
     if notice_path.exists():
         print(f"已存在 {notice_path}，跳過")
+        notice_skipped = True
     else:
         notice_path.write_text(NOTICE_DEFAULT, encoding="utf-8")
         print(f"已生成 {notice_path}")
 
-    update_root_index(name)
+    japanese_name = get_japanese_name(folder)
+    display_text = f"{name}({japanese_name})" if japanese_name else name
+    root_updated = update_root_index(name, display_text)
+
+    msg_lines = [f"✓ 作品資料夾：{name}"]
+    msg_lines.append(f"✓ index.html 已生成")
+    msg_lines.append(f"{'（已存在，跳過）' if notice_skipped else '✓'} notice.txt")
+    msg_lines.append(f"{'✓ 根首頁目錄已更新' if root_updated else '（根首頁連結已存在，跳過）'}")
+    messagebox.showinfo("完成", "\n".join(msg_lines))
 
 
 if __name__ == "__main__":
