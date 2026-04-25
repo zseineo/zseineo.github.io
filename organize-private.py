@@ -10,8 +10,8 @@ from pathlib import Path
 
 PRIVATE_DIR = Path(__file__).parent / "Private"
 
-# 比對「作品名稱_數字」，數字部分允許多位數，副檔名任意
-PATTERN = re.compile(r"^(.+)_(\d+)(\..+)?$")
+# 比對「作品名稱_數字.html」，只處理 HTML 檔案
+PATTERN = re.compile(r"^(.+)_(\d+)\.html$", re.IGNORECASE)
 
 
 def organize():
