@@ -1,7 +1,8 @@
 """
 organize-private.py
-將 Private 資料夾內符合「作品名稱_數字」格式的檔案，
-移入與作品名稱同名的子資料夾（不存在則自動建立）。
+掃描 Private 根目錄的 HTML 檔案（符合「作品名稱_數字」格式），
+在 Private 內（含子資料夾）尋找同名資料夾並移入；
+若找不到，則在根目錄新建同名資料夾再移入。
 """
 
 import re
@@ -12,6 +13,14 @@ PRIVATE_DIR = Path(__file__).parent / "Private"
 
 # 比對「作品名稱_數字.html」，只處理 HTML 檔案
 PATTERN = re.compile(r"^(.+)_(\d+)\.html$", re.IGNORECASE)
+
+
+def find_existing_dir(name: str) -> Path | None:
+    """在 Private 內（含子資料夾）遞迴尋找名稱符合的資料夾，回傳第一個找到的路徑。"""
+    for d in PRIVATE_DIR.rglob(name):
+        if d.is_dir():
+            return d
+    return None
 
 
 def organize():
@@ -32,18 +41,17 @@ def organize():
             continue
 
         work_name = m.group(1)
-        dest_dir = PRIVATE_DIR / work_name
-
+        dest_dir = find_existing_dir(work_name) or PRIVATE_DIR / work_name
         dest_dir.mkdir(exist_ok=True)
-        dest = dest_dir / file.name
 
+        dest = dest_dir / file.name
         if dest.exists():
             print(f"[跳過] 目標已存在：{dest.relative_to(PRIVATE_DIR.parent)}")
             skipped += 1
             continue
 
         shutil.move(str(file), str(dest))
-        print(f"[移動] {file.name}  →  {work_name}/")
+        print(f"[移動] {file.name}  →  {dest_dir.relative_to(PRIVATE_DIR.parent)}/")
         moved += 1
 
     print(f"\n完成：移動 {moved} 個，跳過 {skipped} 個。")
