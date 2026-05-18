@@ -64,18 +64,8 @@ def build_index(folder: Path, title: str) -> str:
       line-height: 1.6;
       border-radius: 0 4px 4px 0;
     }}
-    ul {{ list-style: none; padding: 0; margin: 0 0 28px; }}
-    li {{ margin: 0; }}
-    li a {{
-      display: block;
-      padding: 12px 14px;
-      white-space: nowrap;
-      overflow-x: auto;
-      border-bottom: 1px solid #eee;
-      border-radius: 4px;
-    }}
-    li:last-child a {{ border-bottom: none; }}
-    li a:hover {{ background: #eef3ff; }}
+    ul {{ list-style: none; padding: 0; }}
+    li {{ margin: 8px 0; }}
     a {{ text-decoration: none; color: #0066cc; }}
     a:hover {{ text-decoration: underline; }}
   </style>
