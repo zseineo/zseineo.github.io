@@ -11,8 +11,8 @@ from pathlib import Path
 
 PRIVATE_DIR = Path(__file__).parent / "Private"
 
-# 比對「作品名稱_數字.html」，只處理 HTML 檔案
-PATTERN = re.compile(r"^(.+)_(\d+)\.html$", re.IGNORECASE)
+# 比對「作品名稱_任意話數.html」，底線前為作品名稱，底線後不限格式（數字、5-1、2.5 等）
+PATTERN = re.compile(r"^(.+)_(.+)\.html$", re.IGNORECASE)
 
 
 def find_existing_dir(name: str) -> Path | None:
