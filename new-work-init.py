@@ -22,7 +22,7 @@ def natural_key(s):
     return [int(c) if c.isdigit() else c for c in re.split(r'(\d+)', s)]
 
 
-def build_index(folder: Path, title: str) -> str:
+def build_index(folder: Path, title: str, back_href: str = "../../") -> str:
     files = sorted(
         [f.name for f in folder.glob("*.html") if f.name != "index.html"],
         key=natural_key,
@@ -72,7 +72,7 @@ def build_index(folder: Path, title: str) -> str:
   </style>
 </head>
 <body>
-  <a class="back" href="../../">← 返回首頁</a>
+  <a class="back" href="{back_href}">← 返回首頁</a>
   <h1>{title}</h1>
 
   <h2>公告</h2>
@@ -194,13 +194,21 @@ def main():
         sys.exit(1)
 
     parts = rel.parts
-    if len(parts) != 1:
-        messagebox.showerror("錯誤", f"請直接選取 gallery/ 的子資料夾，不要選到更深的層級。\n選取：{folder}")
+    # 允許兩種位置：
+    #   gallery/<作品名>            → 正式作品，會寫入根首頁
+    #   gallery/working/<作品名>    → 翻譯作業中暫存，不寫入根首頁
+    is_working = len(parts) == 2 and parts[0] == "working"
+    if not (len(parts) == 1 or is_working):
+        messagebox.showerror(
+            "錯誤",
+            f"請選取 gallery/ 的子資料夾，或 gallery/working/ 內的子資料夾。\n選取：{folder}",
+        )
         sys.exit(1)
 
-    name = parts[0]
+    name = parts[-1]
 
-    if name in RESERVED_NAMES:
+    # 只有把 working 本身當成作品名（gallery/working）時才擋，working 底下的子資料夾放行
+    if len(parts) == 1 and name in RESERVED_NAMES:
         messagebox.showerror("錯誤", f"'{name}' 為保留名稱，不可作為作品名。")
         sys.exit(1)
 
@@ -216,7 +224,9 @@ def main():
     index_path = folder / "index.html"
     notice_path = folder / "notice.txt"
 
-    index_path.write_text(build_index(folder, title), encoding="utf-8")
+    # working 底下多一層，返回首頁的相對路徑要再往上一層
+    back_href = "../../../" if is_working else "../../"
+    index_path.write_text(build_index(folder, title, back_href), encoding="utf-8")
     print(f"已生成 {index_path}")
 
     notice_skipped = False
@@ -227,14 +237,22 @@ def main():
         notice_path.write_text(NOTICE_DEFAULT, encoding="utf-8")
         print(f"已生成 {notice_path}")
 
-    japanese_name = get_japanese_name(folder)
-    display_text = f"{name}({japanese_name})" if japanese_name else name
-    root_updated = update_root_index(name, display_text)
+    # working 內的作業暫存不列入根首頁目錄
+    if is_working:
+        root_updated = False
+    else:
+        japanese_name = get_japanese_name(folder)
+        display_text = f"{name}({japanese_name})" if japanese_name else name
+        root_updated = update_root_index(name, display_text)
 
-    msg_lines = [f"✓ 作品資料夾：{name}"]
+    location = "gallery/working/" if is_working else "gallery/"
+    msg_lines = [f"✓ 作品資料夾：{location}{name}"]
     msg_lines.append(f"✓ index.html 已生成")
     msg_lines.append(f"{'（已存在，跳過）' if notice_skipped else '✓'} notice.txt")
-    msg_lines.append(f"{'✓ 根首頁目錄已更新' if root_updated else '（根首頁連結已存在，跳過）'}")
+    if is_working:
+        msg_lines.append("（working 暫存，不寫入根首頁）")
+    else:
+        msg_lines.append(f"{'✓ 根首頁目錄已更新' if root_updated else '（根首頁連結已存在，跳過）'}")
     messagebox.showinfo("完成", "\n".join(msg_lines))
 
 
