@@ -13,3 +13,4 @@ scripts-overview.md
 __pycache__/
 *.pyc
 .last_assets_check
+script/
