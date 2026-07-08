@@ -18,8 +18,53 @@ NOTICE_DEFAULT = "作者 "
 RESERVED_NAMES = {"working"}
 
 
+_KANJI_DIGITS = {
+    '零': 0, '一': 1, '二': 2, '三': 3, '四': 4,
+    '五': 5, '六': 6, '七': 7, '八': 8, '九': 9,
+}
+_KANJI_UNITS = {'十': 10, '百': 100, '千': 1000}
+_KANJI_BIG_UNITS = {'万': 10000, '萬': 10000}
+_KANJI_CHARS = set(_KANJI_DIGITS) | set(_KANJI_UNITS) | set(_KANJI_BIG_UNITS)
+
+_TOKEN_RE = re.compile(r'(\d+|[' + ''.join(_KANJI_CHARS) + r']+)')
+
+
+def kanji_to_int(s):
+    """將漢數字字串（如「二十三」）轉為整數；含未知字元則回傳 None。"""
+    total = 0
+    section = 0
+    number = 0
+    for c in s:
+        if c in _KANJI_DIGITS:
+            number = _KANJI_DIGITS[c]
+        elif c in _KANJI_UNITS:
+            section += (number or 1) * _KANJI_UNITS[c]
+            number = 0
+        elif c in _KANJI_BIG_UNITS:
+            section += number
+            total += section * _KANJI_BIG_UNITS[c]
+            section = 0
+            number = 0
+        else:
+            return None
+    return total + section + number
+
+
 def natural_key(s):
-    return [int(c) if c.isdigit() else c for c in re.split(r'(\d+)', s)]
+    """自然排序鍵：全形數字（Python \\d/int 原生支援）與中日漢數字（一二三…十百千万）
+    都會被還原成數值排序，而非依字元或 Unicode 碼位排序。"""
+    key = []
+    for token in _TOKEN_RE.split(s):
+        if token == '':
+            continue
+        if token.isdigit():
+            key.append((0, int(token)))
+        elif all(c in _KANJI_CHARS for c in token):
+            n = kanji_to_int(token)
+            key.append((0, n) if n is not None else (1, token))
+        else:
+            key.append((1, token))
+    return key
 
 
 def build_index(folder: Path, title: str, back_href: str = "../../") -> str:

@@ -78,7 +78,7 @@
   </div>
 
   <!-- LIST_START -->
-  <details open class="group">
+  <details class="group">
     <summary>TOKIO～光を求めて～</summary>
     <ul>
       <li><a href="TOKIO～光を求めて～/TOKIO～光を求めて～/TOKIO～光を求めて～_199.html">TOKIO～光を求めて～_199</a></li>
@@ -382,7 +382,7 @@
       <li><a href="TOKIO～光を求めて～/TOKIO～光を求めて～第２部/【Ｒ１８】TOKIO～光を求めて～　第２部【ルーグ・アフター】.html">【Ｒ１８】TOKIO～光を求めて～　第２部【ルーグ・アフター】</a></li>
     </ul>
   </details>
-  <details open class="group">
+  <details class="group">
     <summary>ヴィクターちゃんは、悪役令嬢になりたいそうです</summary>
     <ul>
       <li><a href="ヴィクターちゃんは、悪役令嬢になりたいそうです/ヴィクターちゃんは、悪役令嬢になりたいそうです　第1話　悪役令嬢って……どんなのだっけ？.html">ヴィクターちゃんは、悪役令嬢になりたいそうです　第1話　悪役令嬢って……どんなのだっけ？</a></li>
@@ -392,7 +392,7 @@
       <li><a href="ヴィクターちゃんは、悪役令嬢になりたいそうです/ヴィクターちゃんは、悪役令嬢になりたいそうです　第5話　家族たち　その２　思い出してなかったし、素質あるって知らなかったし.html">ヴィクターちゃんは、悪役令嬢になりたいそうです　第5話　家族たち　その２　思い出してなかったし、素質あるって知らなかったし</a></li>
     </ul>
   </details>
-  <details open class="group">
+  <details class="group">
     <summary>この素晴らしいシンオウに祝福を！</summary>
     <ul>
       <li><a href="この素晴らしいシンオウに祝福を！/この素晴らしいシンオウに祝福を！　キャラ作成.html">この素晴らしいシンオウに祝福を！　キャラ作成</a></li>
@@ -532,7 +532,7 @@
       <li><a href="この素晴らしいシンオウに祝福を！/この素晴らしいシンオウに祝福を！　第134話.html">この素晴らしいシンオウに祝福を！　第134話</a></li>
     </ul>
   </details>
-  <details open class="group">
+  <details class="group">
     <summary>やる夫がプロ野球選手になるようです</summary>
     <ul>
       <li><a href="やる夫がプロ野球選手になるようです/やる夫がプロ野球選手になるようです オアソビ2 翠星石と蒼星石.html">やる夫がプロ野球選手になるようです オアソビ2 翠星石と蒼星石</a></li>
@@ -556,7 +556,7 @@
       <li><a href="やる夫がプロ野球選手になるようです/やる夫がプロ野球選手になるようです 雑談.html">やる夫がプロ野球選手になるようです 雑談</a></li>
     </ul>
   </details>
-  <details open class="group">
+  <details class="group">
     <summary>やる夫は奇妙なゾンビ世界で人類復興を目指すようです 第一話</summary>
     <ul>
       <li><a href="やる夫は奇妙なゾンビ世界で人類復興を目指すようです 第一話/やる夫は奇妙なゾンビ世界で人類復興を目指すようです 第一話 アローンアゲインとダフトパンク 前篇.html">やる夫は奇妙なゾンビ世界で人類復興を目指すようです 第一話 アローンアゲインとダフトパンク 前篇</a></li>
@@ -565,7 +565,7 @@
       <li><a href="やる夫は奇妙なゾンビ世界で人類復興を目指すようです 第一話/やる夫は奇妙なゾンビ世界で人類復興を目指すようです 第四話　ビーティアイとランダムアクセスメモリーズ.html">やる夫は奇妙なゾンビ世界で人類復興を目指すようです 第四話　ビーティアイとランダムアクセスメモリーズ</a></li>
     </ul>
   </details>
-  <details open class="group">
+  <details class="group">
     <summary>新增資料夾</summary>
     <ul>
       <li><a href="新增資料夾/あんこモンアドベンチャー　第1話.html">あんこモンアドベンチャー　第1話</a></li>
@@ -606,6 +606,26 @@
       localStorage.removeItem(KEY);
       picker.value = '#ffffff';
       document.body.style.backgroundColor = '';
+    });
+
+    const GROUP_KEY = 'workingGroupOpenState';
+    let groupState = {};
+    try {
+      groupState = JSON.parse(localStorage.getItem(GROUP_KEY)) || {};
+    } catch (e) {
+      groupState = {};
+    }
+
+    document.querySelectorAll('details.group').forEach((details) => {
+      const summary = details.querySelector('summary');
+      const name = summary ? summary.textContent.trim() : '';
+      if (groupState[name]) {
+        details.open = true;
+      }
+      details.addEventListener('toggle', () => {
+        groupState[name] = details.open;
+        localStorage.setItem(GROUP_KEY, JSON.stringify(groupState));
+      });
     });
   </script>
 </body>
