@@ -2,8 +2,18 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AA_Translated</title>
     <style>
+    /* monapo:start */
+    @font-face {
+        font-family: 'Monapo';
+        src: url('../../fonts/monapo.ttf') format('truetype');
+        font-weight: normal;
+        font-style: normal;
+        font-display: swap;
+    }
+    /* monapo:end */
         body { background-color: #fff; color: #000; padding: 20px; }
         pre {
             font-family: 'MS PGothic', 'Meiryo', monospace;
@@ -660,7 +670,7 @@
  　　　　　　　　　　　　　　 　 ,!　　　　　　ﾉ 
  　　　　　　　 　 ,.--,- &#x27;&quot;￣｀`ヽ､　　　 　 ( 
  　　　　　　　 ノ′{´ ／⌒ヽ　&#x27;,　ヽ　　　 !） 
- 　　　　　　／　　 ∨.__　　　∨ ,ﾘ,ﾞi　 　 7　　　　　　　　　　　　　はい 
+ 　　　　　　／　　 ∨.__　　　∨ ,ﾘ,ﾞi　 　 7　　　　　　　　　　　　　是 
  　　 　 　 ﾉ.-‐ ‐-/,&#x27; 　 }　 ,／&#x27;,´// ﾘ　/ 
  　　　　/´　　　　{ i 　 {　 ( .＞､.._}&#x27;´￣ 
  　　　/　　　　　,..ﾊ　　:　人_,,.＿-｀`ｰ ､..__　　　　　　　　　　　　　　　　　　　　　　　　才不是好嗎？　＞ 
@@ -693,7 +703,7 @@
  　　　　　 i `, ｀i　_ｨケ斗、　`, ｀ｨｹ斗 !　 i　 }! 
  　　　　　　　ﾄ ﾊ !` 辷ｼ　　　　&quot;辷ｼ〉j　/　 ji　　　　　　總之先把衣服穿上好嗎？ 
  　　 　 　 　 / ＼ゝ&quot;　　　　,　　　　,,ｨ／!）　.{&#x27;　 
- 　　　　　　 j&quot; / iヾ、　　　　　　 　 イ_-&quot;　　i　　　　　　ね？　你是開玩笑的對吧？　是騙人的對吧？　其實你不會做出那種過分的事對吧？　ね？ 
+ 　　　　　　 j&quot; / iヾ、　　　　　　 　 イ_-&quot;　　i　　　　　　那個？　你是開玩笑的對吧？　是騙人的對吧？　其實你不會做出那種過分的事對吧？　對吧？ 
  　　　　　　/ /　!!　＞ 、　 ^　__,,,＜7 / 　 ハ 
  　　 　 　 / ハ　!.l　/　イ｀　&quot;　ﾄ、 / ∧　,&#x27; 　! 
  　　　　／ /　!__! &#x27;,ー&quot;&#x27;,　ゝt-&#x27;&#x27;&quot; 〉/ /ー≠ 　.&#x27;, 
@@ -989,7 +999,7 @@
  　　　　　　 　 　 j　. :i　 │ :Ｎ、　　　　　 __　 　 　 　 / : : j/: |　　　　　　　　　 |｣　　　　　　　欸、那個 
  　 　 　 　 　 　 /　. :.ｉ . : |　: :|:｀ﾄ 　 　 　 　 　 　 　 ｲ : :／: ｉ│　　　　　　　　　0 
  　　　　　　 　 /　 : : : : : :|　: :｢｀|　 丶､　　　　. . :´ : |／|.: : :ｉ│ 
- 　　　　　　 　 　 . : /: :/ :|　: :|｀ヽ　　 　 ｀爪|: : :ｉ : : :|: : |.: : :ｉ│　　　　　　　　　　　　　　　　　　　　　<span style="color:rgb(255, 0, 0)">【1D100:76】　　50以上會想起來 </span>
+ 　　　　　　 　 　 . : /: :/ :|　: :|｀ヽ　　 　 ｀爪|: : :ｉ : : :|: : |.: : :ｉ│　　　　　　　　　　　　　　　　　　　　　<span style="color:#ff0000">【1D100:76】　　50以上會想起來 </span>
  　　　　　　 /　 . : /: :/乂|　　|　　＼　　　 ﾄ_｢＼L _ :|: : |.: : :ｉ│ 
  　　　　　　　　. _厶イ : :/|　　|　　 　 丶、　　〉　∨　|: : |、: :乂 
  　　　　　/,　＜ヽ､ __彡　|　　|　　　　　　＼/　　 ∨ |: : | ＼| 
@@ -1639,5 +1649,41 @@
   
  . </pre>
 <script>var c=localStorage.getItem("pagebgColor");if(c)document.body.style.backgroundColor=c;</script>
+
+<!-- monapo:start -->
+<script>
+(function() {
+    // 偵測系統是否有 MS PGothic：
+    // 比較 'MS PGothic' 與純 monospace 渲染同一字串的寬度，
+    // 如果不同，代表 MS PGothic 確實存在。
+    function hasMSPGothic() {
+        var c = document.createElement('canvas');
+        var ctx = c.getContext('2d');
+        var test = 'あいうえおWMHIabc';
+        ctx.font = "16px monospace";
+        var baseW = ctx.measureText(test).width;
+        ctx.font = "16px 'MS PGothic', monospace";
+        var fontW = ctx.measureText(test).width;
+        return Math.abs(baseW - fontW) > 1;
+    }
+
+    if (hasMSPGothic()) return;  // 系統有 MS PGothic，直接用，不替換
+
+    // 沒有 MS PGothic：等 Monapo 載入後再套用，避免跳字
+    function applyMonapo() {
+        var pres = document.querySelectorAll('pre');
+        for (var i = 0; i < pres.length; i++) {
+            pres[i].style.fontFamily = "'Monapo', 'MS PGothic', monospace";
+        }
+    }
+
+    if (document.fonts && document.fonts.load) {
+        document.fonts.load("16px 'Monapo'").then(applyMonapo, applyMonapo);
+    } else {
+        applyMonapo();
+    }
+})();
+</script>
+<!-- monapo:end -->
 </body>
 </html>

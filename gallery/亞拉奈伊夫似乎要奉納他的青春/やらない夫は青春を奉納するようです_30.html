@@ -2,8 +2,18 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AA_Translated</title>
     <style>
+    /* monapo:start */
+    @font-face {
+        font-family: 'Monapo';
+        src: url('../../fonts/monapo.ttf') format('truetype');
+        font-weight: normal;
+        font-style: normal;
+        font-display: swap;
+    }
+    /* monapo:end */
         body { background-color: #fff; color: #000; padding: 20px; }
         pre {
             font-family: 'MS PGothic', 'Meiryo', monospace;
@@ -142,7 +152,7 @@
  　　　　 　 　 　 　 　 　 /:::::/:::::::::::::::::::::::::l:::::;＞&#x27;&quot;＿ 　 .}:ｌ::::::::::::::;::::::::::i 
  　　　　　　　　　 　 　 ,:::::::::::::::::::::::ｌ::/::::::::l.rｰ- ＿ ヽ￣ &#x27; !:::::::::;::ハ:::::::::､ 
  　　　　　　　　　　　／:／::::::／､ヽl::ﾊ:::::::| ｀ -　 ｌ!._｀　　 l:::／ー- !::::::ﾄ::::､ 
- 　　　　　　　　　　 &#x27;&quot;　/::::::::::{ .- ｊ ヽ　ヽ::!　　　　　 　 　 &#x27;&quot;‐- _　､l:::::::l　　　　　　　…………はぁ 
+ 　　　　　　　　　　 &#x27;&quot;　/::::::::::{ .- ｊ ヽ　ヽ::!　　　　　 　 　 &#x27;&quot;‐- _　､l:::::::l　　　　　　　…………哈啊 
  　　　　 　 　 　 　 　 /:::::::::::::ヽ ､::. 　 　 ｀　　　　　　 　 　 .　 l!_ヽ:::::::ﾉ 
  　　　　　　　　　　　/:::::;::イ::::::::ゝ..._　　∪　　　　　　　　　 〉　 ./:::／　　　　　　　要是我是個帥哥又擅長社交那就算了 
  　 　 　 　 　 　 　 /::／　/:::ﾍ::::::::::::ﾊ　　　　　　 　 　 　 　 　 /〈 
@@ -889,7 +899,7 @@
  　　　　　 　 　 　 　 　 　 |::::::|:::从 Vツ　 　＼:::V人:l:::|:::/ 
  　　　　　 　 　 　 　 　 　 |:::八∧　.:::::.　 　&#x27;　 ＼{::. |l:::|/　　　　　　　　被排擠太可憐了，大家和睦相處吧ー 
  　　　　　 　 　 　 　 　 　 |:::::::::`iﾍ　 　 r―┐ 　 ヽ八:| 
- 　　　　　 　 　 　 　 　 　 |::::|::::::|:込、 　 --&#x27;　　.. ｲ:: : |　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　倒不如說，這個狀況才可憐吧，大叔！　＞ 
+ 　　　　　 　 　 　 　 　 　 |::::|::::::|:込、 　 --&#x27;　　.. ｲ:: : |　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　不如説，這個狀況很可憐啊，對大叔來説！　＞ 
  　　　　　 　 　 　 　 　 　 |::::|::::::|:::|::::〕　 --　i〔::|:::∨:::|　　　　 
  .　　　　　　　 　 　 　 　 /:::::|::::::レ&#x27;~＼　　　 八:|:::::∨:| 
  　　　　　 　 　 　 　 　 /::::::::l:::://　 　 ＼_／　∧ :::::ⅵ　　　　　　　　這個大叔看起來心理素質很強，沒問題的啦ー 
@@ -2400,5 +2410,41 @@
   
  . </pre>
 <script>var c=localStorage.getItem("pagebgColor");if(c)document.body.style.backgroundColor=c;</script>
+
+<!-- monapo:start -->
+<script>
+(function() {
+    // 偵測系統是否有 MS PGothic：
+    // 比較 'MS PGothic' 與純 monospace 渲染同一字串的寬度，
+    // 如果不同，代表 MS PGothic 確實存在。
+    function hasMSPGothic() {
+        var c = document.createElement('canvas');
+        var ctx = c.getContext('2d');
+        var test = 'あいうえおWMHIabc';
+        ctx.font = "16px monospace";
+        var baseW = ctx.measureText(test).width;
+        ctx.font = "16px 'MS PGothic', monospace";
+        var fontW = ctx.measureText(test).width;
+        return Math.abs(baseW - fontW) > 1;
+    }
+
+    if (hasMSPGothic()) return;  // 系統有 MS PGothic，直接用，不替換
+
+    // 沒有 MS PGothic：等 Monapo 載入後再套用，避免跳字
+    function applyMonapo() {
+        var pres = document.querySelectorAll('pre');
+        for (var i = 0; i < pres.length; i++) {
+            pres[i].style.fontFamily = "'Monapo', 'MS PGothic', monospace";
+        }
+    }
+
+    if (document.fonts && document.fonts.load) {
+        document.fonts.load("16px 'Monapo'").then(applyMonapo, applyMonapo);
+    } else {
+        applyMonapo();
+    }
+})();
+</script>
+<!-- monapo:end -->
 </body>
 </html>

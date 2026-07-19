@@ -2,8 +2,18 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AA_Translated</title>
     <style>
+    /* monapo:start */
+    @font-face {
+        font-family: 'Monapo';
+        src: url('../../fonts/monapo.ttf') format('truetype');
+        font-weight: normal;
+        font-style: normal;
+        font-display: swap;
+    }
+    /* monapo:end */
         body { background-color: #fff; color: #000; padding: 20px; }
         pre {
             font-family: 'MS PGothic', 'Meiryo', monospace;
@@ -1467,9 +1477,9 @@
  　　　/.::/.::;&#x27;::::;:::&#x27;;::::::&#x27;;::::::::&#x27;;::〉ア 
  　　ノi:::;&#x27;:::::!::::|ヽ::&#x27;;::::::&#x27;;:彡-&lt;}　　　　　　　　　　　　問得好，我的惡魔 
  　 　 |!:{:::::j::::;&#x27;　.&gt;:&#x27;;:::::}!＼ ,,..〉 
- 　 　 |!::!::;&#x27;､::&#x27; イ&#x27;ﾗ,ヽ:::i、 / /{　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　請叫我竜ヶ峰……　＞ 
+ 　 　 |!::!::;&#x27;､::&#x27; イ&#x27;ﾗ,ヽ:::i、 / /{　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　請叫我龍之峰……　＞ 
  　　　j从&#x27;ヾﾞ　　 ´　 i::}ヽ-‐`ヾ 
- 　　 　 ﾘヾ､`　__,,,..　ﾘ/　ﾘ:::从&#x27;,　　　　　　　　　　　　　　　竜ヶ峰君 
+ 　　 　 ﾘヾ､`　__,,,..　ﾘ/　ﾘ:::从&#x27;,　　　　　　　　　　　　　　　龍之峰君 
  　　　 　 　 ｀ヽ、 _／　　,&#x27;　ヾ;ﾑﾏ! 
  　　　　　　　　　,､z､　　j ! .r;彡;ヾ=､　　　　　　　　　　　　我啊，多虧前陣子附身降臨當地的人類，學到了一課喔 
  　　　　　　　　ヾミﾆﾆ彡三!j彡ﾆ三三≧x、 
@@ -1674,7 +1684,7 @@
  　　 　 　 　 　 　 ＞` ´ ￣　　 　 　 ￣ ＼　　　　　　　　　　　　　　　　【1D100:62】　　越靠近 1 祝福就被壓制得越低 
  　　　　　　　 　 .′￣ ヽ　　　　　　　　　　ヽ 
  　　　　　　　　　　　　　 ‘，　　　　　　 　 　 }&#x27;, 
- 　 　 　 　 　 　 {　　　　　　 :　　　　. . : : : :.　 ,　　　　　　　　　　　　　　※【至少在竜ヶ峰的干預下，已經不是家人的復甦了】 
+ 　 　 　 　 　 　 {　　　　　　 :　　　　. . : : : :.　 ,　　　　　　　　　　　　　　※【至少在龍之峰的干預下，已經不是家人的復甦了】 
  　 　 　 　 　 　 {　　　　　 , j ,. : : : : : : : : : :j{. j 
  　 　 　 　 　 　 }　　　　　 }彡: : : : : : : : : : j{　{ 
  .　　　 　 　 　 〈　　　　　 .} : : : : : : : : : : : j{:　{ 
@@ -2694,5 +2704,41 @@
   
  . </pre>
 <script>var c=localStorage.getItem("pagebgColor");if(c)document.body.style.backgroundColor=c;</script>
+
+<!-- monapo:start -->
+<script>
+(function() {
+    // 偵測系統是否有 MS PGothic：
+    // 比較 'MS PGothic' 與純 monospace 渲染同一字串的寬度，
+    // 如果不同，代表 MS PGothic 確實存在。
+    function hasMSPGothic() {
+        var c = document.createElement('canvas');
+        var ctx = c.getContext('2d');
+        var test = 'あいうえおWMHIabc';
+        ctx.font = "16px monospace";
+        var baseW = ctx.measureText(test).width;
+        ctx.font = "16px 'MS PGothic', monospace";
+        var fontW = ctx.measureText(test).width;
+        return Math.abs(baseW - fontW) > 1;
+    }
+
+    if (hasMSPGothic()) return;  // 系統有 MS PGothic，直接用，不替換
+
+    // 沒有 MS PGothic：等 Monapo 載入後再套用，避免跳字
+    function applyMonapo() {
+        var pres = document.querySelectorAll('pre');
+        for (var i = 0; i < pres.length; i++) {
+            pres[i].style.fontFamily = "'Monapo', 'MS PGothic', monospace";
+        }
+    }
+
+    if (document.fonts && document.fonts.load) {
+        document.fonts.load("16px 'Monapo'").then(applyMonapo, applyMonapo);
+    } else {
+        applyMonapo();
+    }
+})();
+</script>
+<!-- monapo:end -->
 </body>
 </html>

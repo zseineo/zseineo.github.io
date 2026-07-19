@@ -2,8 +2,18 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AA_Translated</title>
     <style>
+    /* monapo:start */
+    @font-face {
+        font-family: 'Monapo';
+        src: url('../../fonts/monapo.ttf') format('truetype');
+        font-weight: normal;
+        font-style: normal;
+        font-display: swap;
+    }
+    /* monapo:end */
         body { background-color: #fff; color: #000; padding: 20px; }
         pre {
             font-family: 'MS PGothic', 'Meiryo', monospace;
@@ -220,7 +230,7 @@
  　　　　　　　　　 _,,､イ∥&#x27;////i〈//{/∥)ノ ヽ从∧ﾐ､　 &#x27;:、 
  .　　　　　　　 　 　 / ; ; ∥∥ⅰﾄミ､乂´ ｌ i丿 }} 从ヽヽ ヽ 
  　　　　　　　　　　 {{ { {　{　{ j|　ﾟ, 、　　ｉﾉ ﾄ､|八　ﾘ　}　&#x27;, } 
- 　　　　 　 　 　 　 从ﾟ｡! ⅰ-弌=- ヽ　 トノ-ﾘ ;　}i　i　　从 　　　　　　　　那個，這肉？　山？　我要來吃吃看類似這種的東西了 
+ 　　　　 　 　 　 　 从ﾟ｡! ⅰ-弌=- ヽ　 トノ-ﾘ ;　}i　i　　从 　　　　　　　　這個像是……肉？還是山一樣的東西，我要吃吃看了
  　　　　 　 　 　 　 八＼､ { ､_開心{ ノ/開心 ﾘ ﾉ小　ﾘ 
  　 　 　 　 　 　 　 　 ＼ﾄ､ヽ《（ｕ)｀゛乂( ´(ｕ）》У&#x27;ノｨレ八　　　　　　　　　怎麼說，這有點奇怪吧，肉堆得像山一樣，我都快被鏡頭擋住了 
  　　　　　　　 　 　 　 　 弋ト　　　　　　　　　　 イﾚ&#x27;ﾉ　　　　　　　 
@@ -1422,7 +1432,7 @@
  　　　　　　　　　　　　　　　　　　　　　　ｰ=彡::::::!:::::|:＼　 　 　 　 ／　ｲ/::::: |:::ﾍ::::ﾍミ=ｰ 
  　　　　　　　　　　　　　　　　　　　　 　 ヾ=彡// :::::|::::|　ー--―　 　 イｲ:!::::|::::::|:|:: |　　　　　　　　　　　　　　　　　　　　玩具　【1D100:76】 
  　　　　　　　　　　　　　　　　 　 　 　 　 　 イ:/i:::: : | : r─┬‐──＝＝厶 :|:::::ﾉハｊ 
- 　　　　　　　　　　　　　　　 　 　 　 　 　 　 i/ i￣￣!i:i|///|//////|￣￣￣￣ ::::|　　　　　　　　　　　　　　　　　　　　　次代　【1D100:23】 
+ 　　　　　　　　　　　　　　　 　 　 　 　 　 　 i/ i￣￣!i:i|///|//////|￣￣￣￣ ::::|　　　　　　　　　　　　　　　　　　　　　後繼者　【1D100:23】 
  　　　　　　　　　　　　　　　　 　 　 　 　 　 　 _|::::::::::|ｉ:i|///|//////|:::::::::::::::::::::::::└┐＿ 
  　　　　　　 　 　 　 　 　 　 　 　 　 _...............ィ::::::::::::l::::::l///////|:::::::|:::::::::::::::::::::::::::::::::::::::::＞...___　　　　　　　　　　　　　麻婆　【1D100:90】 
  　　　　　　　　　　　 .........-:::::::´:::::::::::::::::::::::::::::::::::::::l::::::l///////!|:::::::|::::::::::::::::::::::::::::::::::::::::::::::::::::::::｀::::ｰ......._ 
@@ -1942,5 +1952,41 @@
   
  . </pre>
 <script>var c=localStorage.getItem("pagebgColor");if(c)document.body.style.backgroundColor=c;</script>
+
+<!-- monapo:start -->
+<script>
+(function() {
+    // 偵測系統是否有 MS PGothic：
+    // 比較 'MS PGothic' 與純 monospace 渲染同一字串的寬度，
+    // 如果不同，代表 MS PGothic 確實存在。
+    function hasMSPGothic() {
+        var c = document.createElement('canvas');
+        var ctx = c.getContext('2d');
+        var test = 'あいうえおWMHIabc';
+        ctx.font = "16px monospace";
+        var baseW = ctx.measureText(test).width;
+        ctx.font = "16px 'MS PGothic', monospace";
+        var fontW = ctx.measureText(test).width;
+        return Math.abs(baseW - fontW) > 1;
+    }
+
+    if (hasMSPGothic()) return;  // 系統有 MS PGothic，直接用，不替換
+
+    // 沒有 MS PGothic：等 Monapo 載入後再套用，避免跳字
+    function applyMonapo() {
+        var pres = document.querySelectorAll('pre');
+        for (var i = 0; i < pres.length; i++) {
+            pres[i].style.fontFamily = "'Monapo', 'MS PGothic', monospace";
+        }
+    }
+
+    if (document.fonts && document.fonts.load) {
+        document.fonts.load("16px 'Monapo'").then(applyMonapo, applyMonapo);
+    } else {
+        applyMonapo();
+    }
+})();
+</script>
+<!-- monapo:end -->
 </body>
 </html>

@@ -2,8 +2,18 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AA_Translated</title>
     <style>
+    /* monapo:start */
+    @font-face {
+        font-family: 'Monapo';
+        src: url('../../fonts/monapo.ttf') format('truetype');
+        font-weight: normal;
+        font-style: normal;
+        font-display: swap;
+    }
+    /* monapo:end */
         body { background-color: #fff; color: #000; padding: 20px; }
         pre {
             font-family: 'MS PGothic', 'Meiryo', monospace;
@@ -190,7 +200,7 @@
  　　　　　　　　　 　 　 　 　 （__人___）　　　 ｜ 
  　　　　　　　　　　　　　　 　 |　　　　　　u　 |　　　　　　　　　　　欸？　　有紀前輩……欸？ 
  　　　　　　 　 　 　 　 　　 　 |　　　　　　　 .| 
- 　　　　　　　　　　　　　　　　 ヽ　、 　 　　,ｲ　　　　　　　　　　　你認識竜ヶ峰前輩嗎？ 
+ 　　　　　　　　　　　　　　　　 ヽ　、 　 　　,ｲ　　　　　　　　　　　你認識龍之峰前輩嗎？ 
  　　　　　　　　　　　　　 　　 ／ヽ,ー-　　　ﾄ､ 
  　　　　　　　　　　_, ､ -─ &#x27;&quot;.:.ヽ:.:.＼__　/ノ ﾄ、__ 
  　　　__　,.　ー 、...:.:.:.:.:.:.:.:.:.:.:.:.:.:.:.:.:.:.:.:.:.:.:.:.:.:.:.:.:.:.:.:.:.:.... 
@@ -249,7 +259,7 @@
  　　　　　　ゝ､,　　　　　 　 　 　 { 　 .{&#x27;&quot; 
  　　　 　 　 　 }入.　　 　 　 　 　 〉 ./　　　　　　　　　　　　…………好想回家 
  　　　　　　　_.|.　 ＼　 　 　 　 　 ./ 
- 　　　　　　Iゝ{. 　 　 ＼　 ￣　 ／　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　欸？　第一次看到這樣的竜ヶ峰前輩　＞ 
+ 　　　　　　Iゝ{. 　 　 ＼　 ￣　 ／　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　欸？　第一次看到這樣的龍之峰前輩　＞ 
  　　 　 　 ﾉ　　＼　　　 ` ,　- &#x27; 
  　　　　 /　　　　 ｀　､　　{ ｀＼　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　你不是黑幕系的角色嗎？　＞ 
  　 　 ／＼　　　　 　 /´} `.| ／ヽ 
@@ -309,7 +319,7 @@
  　　　 　 　 　　 　　 人､ 　　　　　 | 
  　　　　　　　　　　,ｲ:. ﾄ､ヽ、 __ ,_ ノ　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　…………　＞ 
  　　　 ,. -ｰｰ -‐ ´:::::::::::::::::::::::::::::7　 
- 　　／..::::::::::::::::::::::::::::::::::::::::::::::::: ﾒ、　　　　　　　　　　　哇，竜ヶ峰前輩抗議的視線真讓人愉悅啊！ 
+ 　　／..::::::::::::::::::::::::::::::::::::::::::::::::: ﾒ、　　　　　　　　　　　哇，龍之峰前輩抗議的視線真讓人愉悅啊！ 
  　 ｛ :::::::::::::::::::::.ヽ::::::::::::::::::::::::::::::::::::.. ､_ 
  　　| ::::::::::::::::::::::..｀、:::::::::::::::::::::::::::::::::::::..｀ヽ 
  　　&#x27;| ::::::::::::::::::::::::::::i_::::::::::::::::::::::::::::::::::::.ヽ::ゝ　　　　　 
@@ -1621,5 +1631,41 @@
   
  . </pre>
 <script>var c=localStorage.getItem("pagebgColor");if(c)document.body.style.backgroundColor=c;</script>
+
+<!-- monapo:start -->
+<script>
+(function() {
+    // 偵測系統是否有 MS PGothic：
+    // 比較 'MS PGothic' 與純 monospace 渲染同一字串的寬度，
+    // 如果不同，代表 MS PGothic 確實存在。
+    function hasMSPGothic() {
+        var c = document.createElement('canvas');
+        var ctx = c.getContext('2d');
+        var test = 'あいうえおWMHIabc';
+        ctx.font = "16px monospace";
+        var baseW = ctx.measureText(test).width;
+        ctx.font = "16px 'MS PGothic', monospace";
+        var fontW = ctx.measureText(test).width;
+        return Math.abs(baseW - fontW) > 1;
+    }
+
+    if (hasMSPGothic()) return;  // 系統有 MS PGothic，直接用，不替換
+
+    // 沒有 MS PGothic：等 Monapo 載入後再套用，避免跳字
+    function applyMonapo() {
+        var pres = document.querySelectorAll('pre');
+        for (var i = 0; i < pres.length; i++) {
+            pres[i].style.fontFamily = "'Monapo', 'MS PGothic', monospace";
+        }
+    }
+
+    if (document.fonts && document.fonts.load) {
+        document.fonts.load("16px 'Monapo'").then(applyMonapo, applyMonapo);
+    } else {
+        applyMonapo();
+    }
+})();
+</script>
+<!-- monapo:end -->
 </body>
 </html>

@@ -2,8 +2,18 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AA_Translated</title>
     <style>
+    /* monapo:start */
+    @font-face {
+        font-family: 'Monapo';
+        src: url('../../fonts/monapo.ttf') format('truetype');
+        font-weight: normal;
+        font-style: normal;
+        font-display: swap;
+    }
+    /* monapo:end */
         body { background-color: #fff; color: #000; padding: 20px; }
         pre {
             font-family: 'MS PGothic', 'Meiryo', monospace;
@@ -175,7 +185,7 @@
  　　　　　　　 　 　 　 　 {::::::l:::l:::::::::::ﾊ::::i:::::::!::::::::::/　　 &#x27;::::::i::::::::::::::::::l 
  　　　　　　　　　　 　 　 &#x27;:::::::V:::::::::/__&#x27;:::l:::::::l::::::::/　　 ＿:::::!:::::::::::::::::ゝ　　　　　　　　　　　　　１～３：獻花 
  　　　　　　　　　　　　 　 〉:::::;V::::〈 ＿ヽ!::::::!::::/　￣　＿ &#x27;::&#x27;::::::::::::::::! 
- 　　　　　　　　　　　　　&#x27;&quot; i::::{ ヽ:::::, ＿l｣_ヽ:l::/ 　 &#x27;&quot;_l｣＿　i:::/､::::::::{　　　　　　　　　　　　　<span style="color:rgb(255, 0, 0)">　４～６：送行</span> 
+ 　　　　　　　　　　　　　&#x27;&quot; i::::{ ヽ:::::, ＿l｣_ヽ:l::/ 　 &#x27;&quot;_l｣＿　i:::/､::::::::{　　　　　　　　　　　　　<span style="color:#ff0000">　４～６：送行</span> 
  　　　　　　　　　　　　　　ﾉ ｲヽ｀ ヽ:、　 　 ｀´　　 　 　 　 ﾉｲﾉ,::ﾄ､::ゝ 
  　　　　　　　　　　　　　 　 　 }::::ｰ　 　 　 　 .:}　　　 　 　 /イ::::{　　　　　　　　　　　　　　　　７～９：影片 
  　　　　　　　　　　　　　 　 　 &#x27;ﾉ&#x27;;::::::,　　　　　　　　　　　 ,:::::{ ゝ:、 
@@ -1852,7 +1862,7 @@
  　　　 　 /　　 /　　 　 　　ｰ.／―.ｉ‐､　　 /　　　　　　/ 
  .　　 　 /　　 / 　 　 　 　 ／　　　.|　　　/　 　 /　　 /|　　　　　　　　　　　　　　　　　　這不可能啦！！！！ 
  .　　　 ,′　./ ／　　　.ィ/　 　 _　 |　　./　　　　｀ヽ/　| 
- .　　　,′　 ／ 　 　 .l{¨/=ｭ｡.,_　 ｀&#x27;!　 /　 　 　 　 /｀ヽ|　　　　　　　　　　　　　　　【10D100:629(57+71+94+82+30+67+79+22+57+70)】　戰鬥了這麼多次，要是贏不了就是不可能啦！！ 
+ .　　　,′　 ／ 　 　 .l{¨/=ｭ｡.,_　 ｀&#x27;!　 /　 　 　 　 /｀ヽ|　　　　　　　　　　　　　　　打了【10D100:629(57+71+94+82+30+67+79+22+57+70)】　次，還是贏不了就沒辦法啦！！ 
  　 　 , 　 ∠ 　 イ 　 l|/.l.　,　 ヾk､.| ./ 　 　 　 　 &#x27;　　｜ヽ 
  .　　 ′　　 /　　 。○ 弋 `&#x27;ﾞ .／　|/ 　 　 　 ／‐-ﾐ　 |　|　　　　　　　　　　　　　　這怎麼可能贏得了嘛，笨ー蛋！！！ 
  　　　　　　/　　 　 ./　 丶ニ´　　/　　　 ＞&#x27;==zｭ｡.,_　|　| 
@@ -2396,5 +2406,41 @@
   
  . </pre>
 <script>var c=localStorage.getItem("pagebgColor");if(c)document.body.style.backgroundColor=c;</script>
+
+<!-- monapo:start -->
+<script>
+(function() {
+    // 偵測系統是否有 MS PGothic：
+    // 比較 'MS PGothic' 與純 monospace 渲染同一字串的寬度，
+    // 如果不同，代表 MS PGothic 確實存在。
+    function hasMSPGothic() {
+        var c = document.createElement('canvas');
+        var ctx = c.getContext('2d');
+        var test = 'あいうえおWMHIabc';
+        ctx.font = "16px monospace";
+        var baseW = ctx.measureText(test).width;
+        ctx.font = "16px 'MS PGothic', monospace";
+        var fontW = ctx.measureText(test).width;
+        return Math.abs(baseW - fontW) > 1;
+    }
+
+    if (hasMSPGothic()) return;  // 系統有 MS PGothic，直接用，不替換
+
+    // 沒有 MS PGothic：等 Monapo 載入後再套用，避免跳字
+    function applyMonapo() {
+        var pres = document.querySelectorAll('pre');
+        for (var i = 0; i < pres.length; i++) {
+            pres[i].style.fontFamily = "'Monapo', 'MS PGothic', monospace";
+        }
+    }
+
+    if (document.fonts && document.fonts.load) {
+        document.fonts.load("16px 'Monapo'").then(applyMonapo, applyMonapo);
+    } else {
+        applyMonapo();
+    }
+})();
+</script>
+<!-- monapo:end -->
 </body>
 </html>
