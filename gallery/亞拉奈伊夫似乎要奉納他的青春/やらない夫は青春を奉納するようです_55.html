@@ -2,8 +2,18 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AA_Translated</title>
     <style>
+    /* monapo:start */
+    @font-face {
+        font-family: 'Monapo';
+        src: url('../../fonts/monapo.ttf') format('truetype');
+        font-weight: normal;
+        font-style: normal;
+        font-display: swap;
+    }
+    /* monapo:end */
         body { background-color: #fff; color: #000; padding: 20px; }
         pre {
             font-family: 'MS PGothic', 'Meiryo', monospace;
@@ -498,7 +508,7 @@
  　　　　　{∧ 　 　 ､　Vソ　　,　　　　 イ　　｜ 〉 
  　　　　　　 | ∧　　＼_　 　 　 _ 　 　 j|　 　 !　　　　　　　　　　　　天才藝術家的凋零，還有他女兒的苦惱之類的，這方向滿好的說 
  　　　 　 　_j/　〉　　､(.,_　　 ´　 　 ／∧　 ∧ 
- 　　　　 　 ＿_/／)　 厂≧s｡._ .　´{＿_,ｊ／　　　　　　　　　　　　　從那邊發展成殉情就覺得啊ー 
+ 　　　　 　 ＿_/／)　 厂≧s｡._ .　´{＿_,ｊ／　　　　　　　　　　　　　但從那邊發展成一同自盡就覺得啊ー
  　　　 〈￣　 　 ＼j／￣￣ ＼　　__У/￣　７、 
  　　　 ∧　　　　　i{　　　　 　 | ｒ┴― ￣＼i{　｀　、 
  　 　 / ∧ 　 「　　{　┐　　　 | ⊂ニ__　 　 ∨ /　　　　　　　　　　　不太能讓人發笑，要扣分呢 
@@ -859,7 +869,7 @@
  　　　　　　　　　　 　 　 ｌ　　　　　 　 　 　 　 　 　 / 
  　　　 　 　 　 　 　 　 　 ｌ　　　　　　　 　 　 　 　 /　　　　　　　　　　　　　　　　　【１：搬家吧！　真是的，實在太窄了！！】 
  　　　　　　　　　 　 　 　 |　　　　　　　 　 　 　 　{ 
- 　　　　　　　　　　　　　　l　　　　　　　　　　　　 (,_＿　　　　　　　　　　　　　　　【２：和其他參加者交流吧。單向除外】 
+ 　　　　　　　　　　　　　　l　　　　　　　　　　　　 (,_＿　　　　　　　　　　　　　　【２：和其他參加者交流吧。一方通行除外】
  　　 　 　 　 　 　 　 　 　 ｀､ 　 　 　 _-‐´＞///////{ 
  　　　　　　　　 　 　 　 　 　 ￣￣´ｒ＞ ´/////////∧　　　　　　　　　　　　　　【３：思考一下關於妖怪化的事吧】 
  　　　　　　　　　　　　　　　　　　ﾊﾞ////＞/////////ﾊ 
@@ -1095,7 +1105,7 @@
  　　　　　　　　　　　　　　　　　　　|::::l::::|:::.!:::::.　 :　 ,:/|::::::　 :　　　　　 i |　 i　　　　l　　|　 
  　　　　　　　 　 　 　 　 　 　 　 　 l:::l:::::ｌ:::l:::::::.　:　 /　!:::i:　 :.　　 .:　　ﾊjﾞ､: l　　 　 |: i　!　　　　　４～６：明顯是在發情 
  　　　　　　　　　　　　　　　　　　　ヽﾄ､::l::ﾊ:::::::. :. /j 　 !:ｌ|:　::. 　 .:::　/　}　i ;　　　　!: ﾚ′ 
- 　　　　　　　　　　　　　　　 　 　 　 　 jﾊトlﾄ､::::::::i7ヽ_. !:!&#x27;;. i::.　/!::/ﾘ　ﾑ.イ /　/: / /　　　　　<span style="color:rgb(255, 0, 0)">　７～９：一直舔我的肚臍 </span>
+ 　　　　　　　　　　　　　　　 　 　 　 　 jﾊトlﾄ､::::::::i7ヽ_. !:!&#x27;;. i::.　/!::/ﾘ　ﾑ.イ /　/: / /　　　　　<span style="color:#ff0000">　７～９：一直舔我的肚臍 </span>
  　　　　　　　　　　　　　　　　　　　　　_, ＜&#x27;､::ヽ:::衽廴≧ｘﾞ;&#x27;::::/ j:厶イ_,少;ｲ: /:: / / 
  　　　　　　　　　　　　　　　　　 　 　 /⌒＼＼::::ﾄﾞ、｀二´ /／ /&#x27;´　 ￣　 ノｲ::／V　　　　　　　　１０：出局 
  　　　　　　 　 　 　 　 　 　 　 　 　 /　 : : :ﾞ,＼ヽゝ （///）´　　･　　 （///）ノｲ 　 i 
@@ -1407,5 +1417,41 @@
   
  . </pre>
 <script>var c=localStorage.getItem("pagebgColor");if(c)document.body.style.backgroundColor=c;</script>
+
+<!-- monapo:start -->
+<script>
+(function() {
+    // 偵測系統是否有 MS PGothic：
+    // 比較 'MS PGothic' 與純 monospace 渲染同一字串的寬度，
+    // 如果不同，代表 MS PGothic 確實存在。
+    function hasMSPGothic() {
+        var c = document.createElement('canvas');
+        var ctx = c.getContext('2d');
+        var test = 'あいうえおWMHIabc';
+        ctx.font = "16px monospace";
+        var baseW = ctx.measureText(test).width;
+        ctx.font = "16px 'MS PGothic', monospace";
+        var fontW = ctx.measureText(test).width;
+        return Math.abs(baseW - fontW) > 1;
+    }
+
+    if (hasMSPGothic()) return;  // 系統有 MS PGothic，直接用，不替換
+
+    // 沒有 MS PGothic：等 Monapo 載入後再套用，避免跳字
+    function applyMonapo() {
+        var pres = document.querySelectorAll('pre');
+        for (var i = 0; i < pres.length; i++) {
+            pres[i].style.fontFamily = "'Monapo', 'MS PGothic', monospace";
+        }
+    }
+
+    if (document.fonts && document.fonts.load) {
+        document.fonts.load("16px 'Monapo'").then(applyMonapo, applyMonapo);
+    } else {
+        applyMonapo();
+    }
+})();
+</script>
+<!-- monapo:end -->
 </body>
 </html>

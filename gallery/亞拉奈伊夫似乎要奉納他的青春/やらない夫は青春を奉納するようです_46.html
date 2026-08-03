@@ -2,8 +2,18 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AA_Translated</title>
     <style>
+    /* monapo:start */
+    @font-face {
+        font-family: 'Monapo';
+        src: url('../../fonts/monapo.ttf') format('truetype');
+        font-weight: normal;
+        font-style: normal;
+        font-display: swap;
+    }
+    /* monapo:end */
         body { background-color: #fff; color: #000; padding: 20px; }
         pre {
             font-family: 'MS PGothic', 'Meiryo', monospace;
@@ -571,7 +581,7 @@
  　　　 　 　 　 　 }/////＜´~㍉//ム 
  　　　 　 　 　 ／//＜´　　　　|////　　　　　　（陷阱很惡毒，魔物之類的也很強又多） 
  　　　　　 　 &lt;_≦l´[lﾆ[｢o&#x27;[lﾆ[lｵ/// 
- 　　　　　　　　 {　　ミ.､|| 、　　 }&quot;´　　　　　　　（不過――――比起跟ベイさん和施雷伯さん戰鬥，這已經好太多了啊！） 
+ 　　　　　　　　 {　　ミ.､|| 、　　 }&quot;´　　　　　　　（不過――――比起跟佩さん和施雷伯さん戰鬥，這已經好太多了啊！） 
  　　　 　 　 　 ム 　ミ、ij ﾐ、　ゞ 〉 
  　　　　　　　/／&#x27;´ ヾ/&quot;∨ﾐ、 ヾ:! 
  .　　　　　　/　　　　/　　∨　　　l 
@@ -887,17 +897,17 @@
  　　　【本次寶物一覽】 
   
   
- 　　　・A－１：　『氷樹の雫』　　→　非常清澈的水。這是煉金術等領域中最頂級的素材。 
+ 　　　・A－１：　『冰樹的淚珠』　　→　非常清澈的水。這是煉金術等領域中最頂級的素材。 
   
- 　　・Aー２：　　『万化の面】　　→　無臉的面具。戴上這個就能變身成任何人。唯獨外表可以變得完美無缺。 
+ 　　・Aー２：　　『萬化的面貌】　　→　無臉的面具。戴上這個就能變身成任何人。唯獨外表可以變得完美無缺。 
   
- 　・B -　１：　　『雷石のネックレス】　→　用黃金色的寶石打造而成的項鍊。擁有操縱雷電的力量。 
+ 　・B -　１：　　『雷石的項鏈】　→　用黃金色的寶石打造而成的項鍊。擁有操縱雷電的力量。 
   
- 　・B　－２：　　『契約のインク】　　→　使用這種墨水訂下的契約，就算是神也無法推翻。 
+ 　・B　－２：　　『契約的墨水】　　→　使用這種墨水訂下的契約，就算是神也無法推翻。 
   
- 　・B　－　３：　　『神性殺しの指輪】　→　戴上這枚戒指的人，無論是神的加護、詛咒，甚至是權能都無法觸及。 
+ 　・B　－　３：　　『抹殺神性的戒指】　→　戴上這枚戒指的人，無論是神的加護、詛咒，甚至是權能都無法觸及。 
   
- 　・B　－４：　　　『黒山羊のミルク】　→　喝下這種牛奶的人，會被賦予滿溢而出的生命力。能夠不老，並且壽命會延長兩百年左右。 
+ 　・B　－４：　　　『黑山羊的乳汁】　→　喝下這種牛奶的人，會被賦予滿溢而出的生命力。能夠不老，並且壽命會延長兩百年左右。 
   
   
   
@@ -1801,5 +1811,41 @@
   
  . </pre>
 <script>var c=localStorage.getItem("pagebgColor");if(c)document.body.style.backgroundColor=c;</script>
+
+<!-- monapo:start -->
+<script>
+(function() {
+    // 偵測系統是否有 MS PGothic：
+    // 比較 'MS PGothic' 與純 monospace 渲染同一字串的寬度，
+    // 如果不同，代表 MS PGothic 確實存在。
+    function hasMSPGothic() {
+        var c = document.createElement('canvas');
+        var ctx = c.getContext('2d');
+        var test = 'あいうえおWMHIabc';
+        ctx.font = "16px monospace";
+        var baseW = ctx.measureText(test).width;
+        ctx.font = "16px 'MS PGothic', monospace";
+        var fontW = ctx.measureText(test).width;
+        return Math.abs(baseW - fontW) > 1;
+    }
+
+    if (hasMSPGothic()) return;  // 系統有 MS PGothic，直接用，不替換
+
+    // 沒有 MS PGothic：等 Monapo 載入後再套用，避免跳字
+    function applyMonapo() {
+        var pres = document.querySelectorAll('pre');
+        for (var i = 0; i < pres.length; i++) {
+            pres[i].style.fontFamily = "'Monapo', 'MS PGothic', monospace";
+        }
+    }
+
+    if (document.fonts && document.fonts.load) {
+        document.fonts.load("16px 'Monapo'").then(applyMonapo, applyMonapo);
+    } else {
+        applyMonapo();
+    }
+})();
+</script>
+<!-- monapo:end -->
 </body>
 </html>
