@@ -47,9 +47,15 @@ def strip_existing_monapo(content):
         content,
     )
     # 2. HTML marker 區塊
+    #    連同區塊前方殘留的空行一起吃掉，統一還原成單一換行，
+    #    否則每執行一次就會在 </pre> 與 </body> 之間多累積一行空行。
+    #
+    #    安全性：這個 \n* 以字面 marker 為錨點，而 marker 永遠位於
+    #    </pre> 之後、</body> 之前，不可能延伸進 <pre> 的 AA 排版裡。
+    #    絕不可改成不帶 marker 錨點的全域空行壓縮 —— 那正是過去弄壞 AA 的寫法。
     content = re.sub(
-        r'[ \t]*' + re.escape(HTML_MARK_S) + r'[\s\S]*?' + re.escape(HTML_MARK_E) + r'[ \t]*\n?',
-        '',
+        r'\n*[ \t]*' + re.escape(HTML_MARK_S) + r'[\s\S]*?' + re.escape(HTML_MARK_E) + r'[ \t]*\n?',
+        '\n',
         content,
     )
     # 3. 舊版無 marker 的 @font-face Monapo 區塊
@@ -124,8 +130,9 @@ def apply_monapo(html_path):
     content = content[:ins] + font_face_block + content[ins:]
 
     # ── 3. 在 </body> 前插入 JS 字型偵測腳本（用 marker 包夾）──
-    js_block = f"""
-{HTML_MARK_S}
+    # 開頭不帶換行：插入點前方的內容本來就以換行結尾，
+    # 多帶一個 \n 會與 strip 的還原不對稱，導致重複執行時空行累積。
+    js_block = f"""{HTML_MARK_S}
 <script>
 (function() {{
     // 偵測系統是否有 MS PGothic：
