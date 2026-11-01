@@ -78,9 +78,12 @@
     return { items: items, title: title || '目錄', indexUrl: indexUrl };
   }
 
-  // 依序試同層、上一層的 index.html，取第一個有同目錄章節的
+  // 由近而遠試各層的 index.html，取第一個列出本頁同目錄章節的。
+  //   gallery/<作品>/x.html                 → 同層
+  //   gallery/working/<子夾>/x.html          → 上一層（working/index.html）
+  //   gallery/working/<子夾>/<孫夾>/x.html   → 上兩層（TOKIO 的巢狀分部）
   function loadIndex() {
-    return ['index.html', '../index.html'].reduce(function (chain, rel) {
+    return ['index.html', '../index.html', '../../index.html'].reduce(function (chain, rel) {
       return chain.then(function (found) {
         if (found) return found;
         var url = new URL(rel, here.href).href;

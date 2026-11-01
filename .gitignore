@@ -14,3 +14,4 @@ __pycache__/
 *.pyc
 .last_assets_check
 script/
+ranking.html.tmp
