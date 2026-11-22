@@ -151,6 +151,22 @@
     '.' + NS + '-list a.is-current{background:#fff8e1;border-left-color:#ffc107;',
     'color:#333;font-weight:700;}',
 
+    // 常駐的上一頁／下一頁，疊在開關按鈕下方，不必展開面板就能翻頁。
+    // 面板展開時淡出，免得和面板內那組上一話／下一話重複。
+    '.' + NS + '-quick{position:fixed;top:64px;right:10px;z-index:2147483001;',
+    'display:flex;flex-direction:column;gap:8px;',
+    'transition:opacity .18s ease-out;}',
+    '.' + NS + '-root.is-open ~ .' + NS + '-quick{opacity:0;pointer-events:none;}',
+    '.' + NS + '-qbtn{width:44px;height:44px;border:0;border-radius:10px;',
+    'display:flex;align-items:center;justify-content:center;padding:0;',
+    'font-size:20px;line-height:1;text-decoration:none;',
+    'background:rgba(33,37,43,.88);color:#fff;',
+    'box-shadow:0 2px 10px rgba(0,0,0,.3);-webkit-tap-highlight-color:transparent;}',
+    'a.' + NS + '-qbtn:hover{background:rgba(33,37,43,1);}',
+    'a.' + NS + '-qbtn:visited{color:#fff;}',
+    'span.' + NS + '-qbtn{background:rgba(33,37,43,.32);color:rgba(255,255,255,.45);',
+    'cursor:default;box-shadow:0 1px 4px rgba(0,0,0,.15);}',
+
     '.' + NS + '-backdrop{position:fixed;top:0;left:0;right:0;bottom:0;',
     'background:rgba(0,0,0,.28);opacity:0;pointer-events:none;',
     'transition:opacity .18s ease-out;z-index:2147482999;}',
@@ -158,7 +174,8 @@
     '@media (min-width:900px){.' + NS + '-root.is-open .' + NS + '-backdrop',
     '{opacity:0;pointer-events:none;}}',
 
-    '@media print{.' + NS + '-root,.' + NS + '-toggle{display:none !important;}}'
+    '@media print{.' + NS + '-root,.' + NS + '-toggle,.' + NS + '-quick',
+    '{display:none !important;}}'
   ].join('');
 
   function el(tag, cls, text) {
@@ -280,10 +297,29 @@
       if (e.key === 'Escape' && root.classList.contains('is-open')) setOpen(false, true);
     });
 
+    // 常駐的上一頁 / 下一頁（面板收起時也看得到）
+    var quick = el('div', NS + '-quick');
+    function quickBtn(idx, glyph, label) {
+      var usable = cur >= 0 && idx >= 0 && idx < data.items.length;
+      var n = el(usable ? 'a' : 'span', NS + '-qbtn', glyph);
+      n.setAttribute('aria-label', label);
+      if (usable) {
+        n.href = data.items[idx].href;
+        n.title = label + '：' + data.items[idx].label;
+      } else {
+        n.title = label + '（沒有了）';
+        n.setAttribute('aria-disabled', 'true');
+      }
+      return n;
+    }
+    quick.appendChild(quickBtn(cur - 1, '↑', '上一頁'));
+    quick.appendChild(quickBtn(cur + 1, '↓', '下一頁'));
+
     root.appendChild(backdrop);
     root.appendChild(panel);
     document.body.appendChild(root);
     document.body.appendChild(toggle);
+    document.body.appendChild(quick);   // 必須排在 root 之後，面板展開時的淡出靠 ~ 選擇器
 
     // 手機一律預設收起，避免遮住 AA；桌機沿用上次狀態
     var remembered = null;
